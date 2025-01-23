@@ -1,0 +1,37 @@
+{
+  "name": "sic",
+  "version": "1.0.0",
+  "description": "Repository made in the scope of the Cloud Services and Interfaces - 3rd year of the Degree in Technologies and Information Systems for the Web (TSIW)\r (ESMAD-P.PORTO)",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon api/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nerf22117/SIC.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/Nerf22117/SIC/issues"
+  },
+  "homepage": "https://github.com/Nerf22117/SIC#readme",
+  "dependencies": {
+    "@apollo/server": "^4.11.3",
+    "@graphql-tools/merge": "^9.0.17",
+    "bcryptjs": "^2.4.3",
+    "connect-mongodb-session": "^5.0.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "graphql": "^16.10.0",
+    "graphql-passport": "^0.6.8",
+    "mongoose": "^8.9.5",
+    "passport": "^0.7.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}

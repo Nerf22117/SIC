@@ -7,7 +7,7 @@ import { GraphQLLocalStrategy } from "graphql-passport";
 export const configurePassport = async () => {
   passport.serializeUser((user, done) => {
     console.log("Serializing user...");
-    done(null, user.id);
+    done(null, user._id);
   });
 
   passport.deserializeUser(async (id, done) => {
@@ -25,12 +25,12 @@ export const configurePassport = async () => {
       try {
         const user = await User.findOne({ email });
         if (!user) {
-          throw new Error("Invalid username or password");
+          throw new Error("Invalid email or password");
         }
         const validPassword = await bcrypt.compare(password, user.password);
 
         if (!validPassword) {
-          throw new Error("Invalid username or password");
+          throw new Error("Invalid email or password");
         }
 
         return done(null, user);

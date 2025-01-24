@@ -1,11 +1,18 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import InputField from "../components/ui/InputField";
+import { useMutation } from "@apollo/client";
+import { Sign_In } from "../graphql/mutations/user.mutation";
+import { toast } from "react-hot-toast";
 
 export default function LoginPage() {
   const [loginData, setLoginData] = useState({
-    username: "",
+    email: "",
     password: "",
+  });
+
+  const [signin, { loading, error }] = useMutation(Sign_In, {
+    refetchQueries: ["GetAuthenticatedUser"],
   });
 
   const handleChange = (e) => {
@@ -18,7 +25,16 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(loginData);
+    try {
+      await signin({
+        variables: {
+          input: loginData,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
   };
 
   return (
@@ -34,10 +50,10 @@ export default function LoginPage() {
             </h1>
             <form className="space-y-4" onSubmit={handleSubmit}>
               <InputField
-                label="Username"
-                id="username"
-                name="username"
-                value={loginData.username}
+                label="Email"
+                id="email"
+                name="email"
+                value={loginData.email}
                 onChange={handleChange}
               />
 
@@ -54,10 +70,15 @@ export default function LoginPage() {
                   type="submit"
                   className="w-full bg-black text-white p-2 rounded-md hover:bg-gray-800 focus:outline-none focus:bg-black  focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed
 									"
-                  //disabled={loading}
+                  disabled={loading}
                 >
-                  Login
+                  {loading ? "Loading..." : "Login"}
                 </button>
+                {error && (
+                  <p className="text-red-500 text-sm text-center">
+                    {error.message}
+                  </p>
+                )}
               </div>
             </form>
             <div className="mt-4 text-sm text-gray-600 text-center">

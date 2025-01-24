@@ -15,7 +15,8 @@ const userResolver = {
           throw new Error("User already exists");
         }
 
-        const salt = await bcrypt.genSalt(process.env.SALT_NUMBER);
+        const saltNumber = parseInt(process.env.SALT_NUMBER);
+        const salt = await bcrypt.genSalt(saltNumber);
         const hashedPassword = await bcrypt.hash(password, salt);
 
         const newUser = new User({

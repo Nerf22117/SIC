@@ -32,7 +32,7 @@ const userResolver = {
         return newUser;
       } catch (error) {
         console.error("Error in signUp: ", error);
-        throw error(error.message || "Internal Server Error");
+        throw new Error(error.message || "Internal Server Error");
       }
     },
     signIn: async (_, { input }, context) => {
@@ -53,7 +53,7 @@ const userResolver = {
         return user;
       } catch (error) {
         console.error("Error in signIn: ", error);
-        throw error(error.message || "Internal Server Error");
+        throw new Error(error.message || "Internal Server Error");
       }
     },
     logout: async (_, __, context) => {
@@ -69,7 +69,7 @@ const userResolver = {
         return { message: "Logout successful" };
       } catch (error) {
         console.error("Error in logout: ", error);
-        throw error(error.message || "Internal Server Error");
+        throw new Error(error.message || "Internal Server Error");
       }
     },
   },
@@ -80,7 +80,7 @@ const userResolver = {
         return user;
       } catch (error) {
         console.error("Error in authUser: ", error);
-        throw error(error.message || "Internal Server Error");
+        throw new Error(error.message || "Internal Server Error");
       }
     },
   },

@@ -43,3 +43,49 @@ export const LOGOUT = gql`
     }
   }
 `;
+
+export const FORGOT_PASSWORD = gql`
+  mutation ForgotPassword($email: String!) {
+    forgotPassword(email: $email) {
+      message
+    }
+  }
+`;
+
+export const VALIDATE_RESET_PASSWORD_CODE = gql`
+  mutation ValidateResetPasswordCode(
+    $email: String!
+    $resetPasswordCode: String!
+  ) {
+    validateResetPasswordCode(
+      email: $email
+      resetPasswordCode: $resetPasswordCode
+    ) {
+      message
+    }
+  }
+`;
+
+export const RESEND_RESET_PASSWORD_CODE = gql`
+  mutation ResendResetPasswordCode($email: String!) {
+    resendResetPasswordCode(email: $email) {
+      message
+    }
+  }
+`;
+
+export const RESET_PASSWORD = gql`
+  mutation ResetPassword(
+    $email: String!
+    $newPassword: String!
+    $confirmNewPassword: String!
+  ) {
+    resetPassword(
+      email: $email
+      newPassword: $newPassword
+      confirmNewPassword: $confirmNewPassword
+    ) {
+      message
+    }
+  }
+`;

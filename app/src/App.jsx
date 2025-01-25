@@ -5,6 +5,9 @@ import SignInPage from "./pages/SignInPage";
 import HomePage from "./pages/HomePage";
 import VerifyAccountPage from "./pages/VerifyAccountPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import VerifyPasswordResetPage from "./pages/VerifyPasswordResetPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 import { useQuery } from "@apollo/client";
 import { GET_AUTHENTICATED_USER } from "./graphql/queries/user.query";
@@ -34,6 +37,22 @@ function App() {
         <Route
           path="/verifyaccount"
           element={!data.authUser ? <VerifyAccountPage /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/forgotpassword"
+          element={
+            !data.authUser ? <ForgotPasswordPage /> : <Navigate to="/" />
+          }
+        />
+        <Route
+          path="/verifypasswordreset"
+          element={
+            !data.authUser ? <VerifyPasswordResetPage /> : <Navigate to="/" />
+          }
+        />
+        <Route
+          path="/resetpassword"
+          element={!data.authUser ? <ResetPasswordPage /> : <Navigate to="/" />}
         />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

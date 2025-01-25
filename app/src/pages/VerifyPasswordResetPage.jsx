@@ -1,15 +1,19 @@
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
-import InputField from "../components/ui/InputField";
-import { toast } from "react-hot-toast";
-import {
-  VERIFY_ACCOUNT,
-  RESEND_VERIFICATION_CODE,
-} from "../graphql/mutations/user.mutation";
 import { useMutation } from "@apollo/client";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
+
+import InputField from "../components/ui/InputField";
+
+import {
+  RESEND_RESET_PASSWORD_CODE,
+  VALIDATE_RESET_PASSWORD_CODE,
+} from "../graphql/mutations/user.mutation";
 import obfuscateEmail from "../../utils/obfuscateEmail";
 
 export default function VerifyAccountPage() {
+  const navigate = useNavigate();
   const location = useLocation();
   const email = location.state.email;
 
@@ -28,25 +32,34 @@ export default function VerifyAccountPage() {
     setCode(newCode);
   };
 
-  const [verifyaccount, { loading, error }] = useMutation(VERIFY_ACCOUNT, {
-    refetchQueries: ["GetAuthenticatedUser"],
-  });
+  const [validateresetpassword, { loading, error }] = useMutation(
+    VALIDATE_RESET_PASSWORD_CODE
+  );
 
-  const [resendCode, { loading: resendLoading, error: resendError }] =
-    useMutation(RESEND_VERIFICATION_CODE);
+  const [
+    resendresetpasswordcode,
+    { loading: resendLoading, error: resendError },
+  ] = useMutation(RESEND_RESET_PASSWORD_CODE);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const verificationCode = code.join("");
+    const resetPasswordCode = code.join("");
 
     try {
-      const response = await verifyaccount({
+      const response = await validateresetpassword({
         variables: {
           email,
-          verificationCode,
+          resetPasswordCode,
         },
       });
-      toast.success("Account verified successfully");
+
+      const message = response.data.validateResetPasswordCode.message;
+      toast.success(message);
+      setTimeout(() => {
+        navigate("/resetpassword", {
+          state: { email },
+        });
+      }, 3000);
     } catch (error) {
       console.log(error);
       toast.error(error.message);
@@ -55,9 +68,9 @@ export default function VerifyAccountPage() {
 
   const handleResendCode = async () => {
     try {
-      const response = await resendCode({ variables: { email } });
+      const response = await resendresetpasswordcode({ variables: { email } });
 
-      const message = response.data.resendVerificationCode.message;
+      const message = response.data.resendResetPasswordCode.message;
 
       toast.success(message);
     } catch (error) {
@@ -68,12 +81,12 @@ export default function VerifyAccountPage() {
 
   return (
     <div className="h-screen flex flex-col justify-center items-center">
-      <h1 className="text-2xl font-bold">Verify Your Account</h1>
-      {email && (
-        <p className="mt-2">
-          Enter the verification code sent to {obfuscatedEmail}
-        </p>
-      )}
+      <h1 className="text-2xl font-bold">Verify Your Password Reset</h1>
+      <p className="text-center text-gray-600">
+        We’ve sent a 4-digit verification code to <br />
+        <span className="font-medium text-black">{obfuscatedEmail}</span>.
+        Please enter it below to proceed.
+      </p>
       <form className="mt-4 space-y-4" onSubmit={handleSubmit}>
         <div className="flex space-x-2">
           {code.map((digit, index) => (
@@ -103,11 +116,22 @@ export default function VerifyAccountPage() {
         className="mt-4 text-blue-500 hover:underline"
         disabled={resendLoading}
       >
-        {resendLoading ? "Resending..." : "Resend verification code"}
+        {resendLoading
+          ? "Resending..."
+          : "Didn’t receive the code? Resend Verification Code"}
       </button>
       {resendError && (
         <p className="text-red-500 text-center">{resendError.message}</p>
       )}
+      <p className="mt-6 text-sm text-gray-500 text-center">
+        Remembered your password? <br />
+        <span
+          className="text-blue-500 hover:underline cursor-pointer"
+          onClick={() => navigate("/signin")}
+        >
+          Go back to login
+        </span>
+      </p>
     </div>
   );
 }

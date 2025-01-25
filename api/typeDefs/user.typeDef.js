@@ -24,6 +24,7 @@ const userTypeDef = `#graphql
         forgotPassword(email: String!): ResponseMessage
         validateResetPasswordCode(email: String!, resetPasswordCode: String!): ResponseMessage
         resetPassword(email: String!, newPassword: String!, confirmNewPassword: String!): ResponseMessage
+        resendResetPasswordCode(email: String!): ResponseMessage
     }
 
     input SignUpInput {

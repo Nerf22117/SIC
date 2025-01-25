@@ -80,6 +80,14 @@ export default function LoginPage() {
                 value={loginData.password}
                 onChange={handleChange}
               />
+              <div className="flex justify-end">
+                <Link
+                  to="/forgotpassword"
+                  className="text-sm text-black hover:underline"
+                >
+                  Forgot password?
+                </Link>
+              </div>
               <div>
                 <button
                   type="submit"

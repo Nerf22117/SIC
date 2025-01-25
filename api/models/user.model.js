@@ -24,6 +24,13 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["male", "female"],
     },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    verificationCode: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

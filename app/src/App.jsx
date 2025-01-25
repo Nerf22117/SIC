@@ -14,46 +14,43 @@ import { GET_AUTHENTICATED_USER } from "./graphql/queries/user.query";
 
 import { Toaster } from "react-hot-toast";
 
+const routes = [
+  { path: "/", element: <HomePage /> },
+  { path: "/signin", element: <SignInPage /> },
+  { path: "/signup", element: <SignUpPage /> },
+  { path: "/verifyaccount", element: <VerifyAccountPage /> },
+  { path: "/forgotpassword", element: <ForgotPasswordPage /> },
+  { path: "/verifypasswordreset", element: <VerifyPasswordResetPage /> },
+  { path: "/resetpassword", element: <ResetPasswordPage /> },
+];
+
 function App() {
   const { loading, data, error } = useQuery(GET_AUTHENTICATED_USER);
 
   if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+
+  const renderRoute = (route) => {
+    const isAuthenticated = data.authUser;
+    if (route.path === "/" && !isAuthenticated) {
+      return <Navigate to="/signin" />;
+    }
+    if (route.path !== "/" && isAuthenticated) {
+      return <Navigate to="/" />;
+    }
+    return route.element;
+  };
 
   return (
     <>
       <Routes>
-        <Route
-          path="/"
-          element={data.authUser ? <HomePage /> : <Navigate to="/signin" />}
-        />
-        <Route
-          path="/signin"
-          element={!data.authUser ? <SignInPage /> : <Navigate to="/" />}
-        />
-        <Route
-          path="/signup"
-          element={!data.authUser ? <SignUpPage /> : <Navigate to="/" />}
-        />
-        <Route
-          path="/verifyaccount"
-          element={!data.authUser ? <VerifyAccountPage /> : <Navigate to="/" />}
-        />
-        <Route
-          path="/forgotpassword"
-          element={
-            !data.authUser ? <ForgotPasswordPage /> : <Navigate to="/" />
-          }
-        />
-        <Route
-          path="/verifypasswordreset"
-          element={
-            !data.authUser ? <VerifyPasswordResetPage /> : <Navigate to="/" />
-          }
-        />
-        <Route
-          path="/resetpassword"
-          element={!data.authUser ? <ResetPasswordPage /> : <Navigate to="/" />}
-        />
+        {routes.map((route) => (
+          <Route
+            key={route.path}
+            path={route.path}
+            element={renderRoute(route)}
+          />
+        ))}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
       <Toaster />

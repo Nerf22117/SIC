@@ -1,9 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import InputField from "../components/ui/InputField";
 import { useMutation } from "@apollo/client";
-import { Sign_In } from "../graphql/mutations/user.mutation";
 import { toast } from "react-hot-toast";
+
+import InputField from "../components/ui/InputField";
+
+import { Sign_IN } from "../graphql/mutations/user.mutation";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -12,7 +14,7 @@ export default function LoginPage() {
     password: "",
   });
 
-  const [signin, { loading, error }] = useMutation(Sign_In, {
+  const [signin, { loading, error }] = useMutation(Sign_IN, {
     refetchQueries: ["GetAuthenticatedUser"],
   });
 
@@ -91,7 +93,7 @@ export default function LoginPage() {
               <div>
                 <button
                   type="submit"
-                  className="w-full bg-black text-white p-2 rounded-md hover:bg-gray-800 focus:outline-none focus:bg-black  focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed
+                  className="w-full bg-black text-white p-2 rounded-md hover:bg-gray-800 cursor-pointer focus:outline-none focus:bg-black  focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed
 									"
                   disabled={loading}
                 >
@@ -104,14 +106,15 @@ export default function LoginPage() {
                 )}
               </div>
             </form>
-            <div className="mt-4 text-sm text-gray-600 text-center">
-              <p>
-                {"Don't"} have an account?{" "}
-                <Link to="/signup" className="text-black hover:underline">
-                  Sign Up
-                </Link>
-              </p>
-            </div>
+            <p className="mt-6 text-sm text-gray-500 text-center">
+              Don't have an account? <br />
+              <span
+                className="text-blue-500 hover:underline cursor-pointer"
+                onClick={() => navigate("/signup")}
+              >
+                Sign Up
+              </span>
+            </p>
           </div>
         </div>
       </div>

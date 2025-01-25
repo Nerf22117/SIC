@@ -10,9 +10,10 @@ import {
   RESEND_RESET_PASSWORD_CODE,
   VALIDATE_RESET_PASSWORD_CODE,
 } from "../graphql/mutations/user.mutation";
+
 import obfuscateEmail from "../../utils/obfuscateEmail";
 
-export default function VerifyAccountPage() {
+export default function VerifyPasswordResetPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const email = location.state.email;
@@ -80,58 +81,76 @@ export default function VerifyAccountPage() {
   };
 
   return (
-    <div className="h-screen flex flex-col justify-center items-center">
-      <h1 className="text-2xl font-bold">Verify Your Password Reset</h1>
-      <p className="text-center text-gray-600">
-        We’ve sent a 4-digit verification code to <br />
-        <span className="font-medium text-black">{obfuscatedEmail}</span>.
-        Please enter it below to proceed.
-      </p>
-      <form className="mt-4 space-y-4" onSubmit={handleSubmit}>
-        <div className="flex space-x-2">
-          {code.map((digit, index) => (
-            <InputField
-              key={index}
-              id={`code-input-${index}`}
-              name={`code-${index}`}
-              type="text"
-              value={digit}
-              onChange={(e) => handleChange(index, e.target.value)}
-              maxLength="1"
-              className="w-12  text-center border rounded-md"
-            />
-          ))}
+    <div className="flex justify-center items-center h-screen">
+      <div className="flex rounded-lg overflow-hidden z-50 bg-gray-300">
+        <div className="w-full bg-gray-100 min-w-80 sm:min-w-96 flex items-center justify-center">
+          <div className="max-w-md w-full p-6">
+            <h1 className="text-3xl font-semibold mb-6 text-black text-center">
+              Verify Your Password Reset
+            </h1>
+            <p className="mb-6 text-center text-gray-600">
+              We’ve sent a 4-digit verification code to <br />
+              <span className="font-medium text-black">{obfuscatedEmail}</span>.
+              Please enter it below to proceed.
+            </p>
+            <form className="mt-4 space-y-4" onSubmit={handleSubmit}>
+              <div className="flex space-x-2">
+                {code.map((digit, index) => (
+                  <InputField
+                    key={index}
+                    id={`code-input-${index}`}
+                    name={`code-${index}`}
+                    type="text"
+                    value={digit}
+                    onChange={(e) => handleChange(index, e.target.value)}
+                    maxLength="1"
+                    className="w-12 text-center border rounded-md"
+                  />
+                ))}
+              </div>
+              <button
+                type="submit"
+                className={`w-full bg-black text-white p-2 rounded-md transition-colors duration-300 
+                  ${
+                    loading
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-gray-800 cursor-pointer"
+                  }`}
+                disabled={loading}
+              >
+                {loading ? "Verifying..." : "Verify"}
+              </button>
+              {error && (
+                <p className="text-red-500 text-center">{error.message}</p>
+              )}
+            </form>
+            <div className="flex justify-center">
+              <button
+                onClick={handleResendCode}
+                className="mt-4 flex  text-blue-500 hover:underline cursor-pointer"
+                disabled={resendLoading}
+              >
+                {resendLoading ? "Resending..." : "Resend Verification Code"}
+              </button>
+              {resendError && (
+                <p className="text-red-500 text-center">
+                  {resendError.message}
+                </p>
+              )}
+            </div>
+
+            <p className="mt-6 text-sm text-gray-500 text-center">
+              Remembered your password? <br />
+              <span
+                className="text-blue-500 hover:underline cursor-pointer"
+                onClick={() => navigate("/signin")}
+              >
+                Go back to login
+              </span>
+            </p>
+          </div>
         </div>
-        <button
-          type="submit"
-          className="w-full bg-black text-white p-2 rounded-md hover:bg-gray-800 focus:outline-none focus:bg-black transition-colors duration-300"
-          disabled={loading}
-        >
-          {loading ? "Verifying..." : "Verify"}
-        </button>
-        {error && <p className="text-red-500 text-center">{error.message}</p>}
-      </form>
-      <button
-        onClick={handleResendCode}
-        className="mt-4 text-blue-500 hover:underline"
-        disabled={resendLoading}
-      >
-        {resendLoading
-          ? "Resending..."
-          : "Didn’t receive the code? Resend Verification Code"}
-      </button>
-      {resendError && (
-        <p className="text-red-500 text-center">{resendError.message}</p>
-      )}
-      <p className="mt-6 text-sm text-gray-500 text-center">
-        Remembered your password? <br />
-        <span
-          className="text-blue-500 hover:underline cursor-pointer"
-          onClick={() => navigate("/signin")}
-        >
-          Go back to login
-        </span>
-      </p>
+      </div>
     </div>
   );
 }

@@ -1,5 +1,7 @@
 import { useMutation } from "@apollo/client";
+
 import toast from "react-hot-toast";
+
 import { LOGOUT } from "../graphql/mutations/user.mutation";
 
 export default function HomePage() {

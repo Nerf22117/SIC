@@ -6,6 +6,8 @@ const userTypeDef = `#graphql
         email: String!
         password: String!
         gender: String!
+        isVerified: Boolean!
+        verificationCode: String
     }
 
     type Query {

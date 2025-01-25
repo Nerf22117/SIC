@@ -23,6 +23,7 @@ export const Sign_In = gql`
     signIn(input: $input) {
       _id
       name
+      isVerified
     }
   }
 `;

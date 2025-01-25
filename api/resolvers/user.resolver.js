@@ -90,6 +90,18 @@ const userResolver = {
           throw new Error("Please fill all fields");
         }
 
+        const userDatabase = await User.findOne({ email });
+
+        if (!userDatabase) {
+          throw new Error("User not found");
+        }
+
+        if (!userDatabase.isVerified) {
+          throw new Error(
+            "Your account is not verified. Please check your email."
+          );
+        }
+
         const { user } = await context.authenticate("graphql-local", {
           email,
           password,

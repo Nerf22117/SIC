@@ -3,9 +3,25 @@ import { gql } from "@apollo/client";
 export const SIGN_UP = gql`
   mutation SignUp($input: SignUpInput!) {
     signUp(input: $input) {
+      message
+    }
+  }
+`;
+
+export const VERIFY_ACCOUNT = gql`
+  mutation VerifyAccount($email: String!, $verificationCode: String!) {
+    verifyAccount(email: $email, verificationCode: $verificationCode) {
       _id
-      name
       username
+      name
+    }
+  }
+`;
+
+export const RESEND_VERIFICATION_CODE = gql`
+  mutation ResendVerificationCode($email: String!) {
+    resendVerificationCode(email: $email) {
+      message
     }
   }
 `;
@@ -15,6 +31,7 @@ export const Sign_In = gql`
     signIn(input: $input) {
       _id
       name
+      isVerified
     }
   }
 `;

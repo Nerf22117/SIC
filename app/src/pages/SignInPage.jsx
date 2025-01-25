@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import InputField from "../components/ui/InputField";
 import { useMutation } from "@apollo/client";
@@ -6,6 +6,7 @@ import { Sign_In } from "../graphql/mutations/user.mutation";
 import { toast } from "react-hot-toast";
 
 export default function LoginPage() {
+  const navigate = useNavigate();
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
@@ -34,6 +35,20 @@ export default function LoginPage() {
     } catch (error) {
       console.log(error);
       toast.error(error.message);
+      if (
+        error.message ===
+        "Your account is not verified. Please check your email."
+      ) {
+        if (loginData.email) {
+          setTimeout(() => {
+            navigate("/verifyaccount", {
+              state: { email: loginData.email },
+            });
+          }, 3000);
+        } else {
+          toast.error("Email is required to verify your account.");
+        }
+      }
     }
   };
 

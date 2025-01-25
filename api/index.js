@@ -1,7 +1,7 @@
 import express from "express";
 import http from "http";
 import cors from "cors";
-import dotenv from "dotenv";
+import "./config/loadEnv.js";
 
 import passport from "passport";
 import session from "express-session";
@@ -18,7 +18,6 @@ import { configurePassport } from "./config/passport.config.js";
 import mergedResolvers from "./resolvers/index.js";
 import mergedTypeDefs from "./typeDefs/index.js";
 
-dotenv.config();
 configurePassport();
 
 const app = express();

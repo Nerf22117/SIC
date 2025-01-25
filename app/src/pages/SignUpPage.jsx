@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import RadioButton from "../components/ui/RadioButton";
 import InputField from "../components/ui/InputField";
 import { useMutation } from "@apollo/client";
@@ -7,6 +7,7 @@ import { SIGN_UP } from "../graphql/mutations/user.mutation";
 import { toast } from "react-hot-toast";
 
 export default function SignUpPage() {
+  const navigate = useNavigate();
   const [signUpData, setSignUpData] = useState({
     name: "",
     username: "",
@@ -22,11 +23,21 @@ export default function SignUpPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await signup({
+      const response = await signup({
         variables: {
           input: signUpData,
         },
       });
+
+      const message = response.data.signUp.message;
+
+      toast.success(message);
+
+      setTimeout(() => {
+        navigate("/verifyaccount", {
+          state: { email: signUpData.email },
+        });
+      }, 2000);
     } catch (error) {
       console.log(error);
       toast.error(error.message);

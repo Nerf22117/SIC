@@ -1,18 +1,20 @@
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
 import { useMutation } from "@apollo/client";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 
 import InputField from "../components/ui/InputField";
 
 import {
-  VERIFY_ACCOUNT,
-  RESEND_VERIFICATION_CODE,
+  RESEND_RESET_PASSWORD_CODE,
+  VALIDATE_RESET_PASSWORD_CODE,
 } from "../graphql/mutations/user.mutation";
 
 import obfuscateEmail from "../../utils/obfuscateEmail";
 
-export default function VerifyAccountPage() {
+export default function VerifyPasswordResetPage() {
+  const navigate = useNavigate();
   const location = useLocation();
   const email = location.state.email;
 
@@ -31,25 +33,34 @@ export default function VerifyAccountPage() {
     setCode(newCode);
   };
 
-  const [verifyaccount, { loading, error }] = useMutation(VERIFY_ACCOUNT, {
-    refetchQueries: ["GetAuthenticatedUser"],
-  });
+  const [validateresetpassword, { loading, error }] = useMutation(
+    VALIDATE_RESET_PASSWORD_CODE
+  );
 
-  const [resendCode, { loading: resendLoading, error: resendError }] =
-    useMutation(RESEND_VERIFICATION_CODE);
+  const [
+    resendresetpasswordcode,
+    { loading: resendLoading, error: resendError },
+  ] = useMutation(RESEND_RESET_PASSWORD_CODE);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const verificationCode = code.join("");
+    const resetPasswordCode = code.join("");
 
     try {
-      const response = await verifyaccount({
+      const response = await validateresetpassword({
         variables: {
           email,
-          verificationCode,
+          resetPasswordCode,
         },
       });
-      toast.success("Account verified successfully");
+
+      const message = response.data.validateResetPasswordCode.message;
+      toast.success(message);
+      setTimeout(() => {
+        navigate("/resetpassword", {
+          state: { email },
+        });
+      }, 3000);
     } catch (error) {
       console.log(error);
       toast.error(error.message);
@@ -58,9 +69,9 @@ export default function VerifyAccountPage() {
 
   const handleResendCode = async () => {
     try {
-      const response = await resendCode({ variables: { email } });
+      const response = await resendresetpasswordcode({ variables: { email } });
 
-      const message = response.data.resendVerificationCode.message;
+      const message = response.data.resendResetPasswordCode.message;
 
       toast.success(message);
     } catch (error) {
@@ -75,7 +86,7 @@ export default function VerifyAccountPage() {
         <div className="w-full bg-gray-100 min-w-80 sm:min-w-96 flex items-center justify-center">
           <div className="max-w-md w-full p-6">
             <h1 className="text-3xl font-semibold mb-6 text-black text-center">
-              Verify Your Account
+              Verify Your Password Reset
             </h1>
             <p className="mb-6 text-center text-gray-600">
               We’ve sent a 4-digit verification code to <br />
@@ -93,13 +104,18 @@ export default function VerifyAccountPage() {
                     value={digit}
                     onChange={(e) => handleChange(index, e.target.value)}
                     maxLength="1"
-                    className="w-12  text-center border rounded-md"
+                    className="w-12 text-center border rounded-md"
                   />
                 ))}
               </div>
               <button
                 type="submit"
-                className="w-full bg-black text-white p-2 rounded-md hover:bg-gray-800 cursor-pointer focus:outline-none focus:bg-black transition-colors duration-300"
+                className={`w-full bg-black text-white p-2 rounded-md transition-colors duration-300 
+                  ${
+                    loading
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-gray-800 cursor-pointer"
+                  }`}
                 disabled={loading}
               >
                 {loading ? "Verifying..." : "Verify"}
@@ -111,10 +127,10 @@ export default function VerifyAccountPage() {
             <div className="flex justify-center">
               <button
                 onClick={handleResendCode}
-                className="mt-4 text-blue-500 flex hover:underline cursor-pointer"
+                className="mt-4 flex  text-blue-500 hover:underline cursor-pointer"
                 disabled={resendLoading}
               >
-                {resendLoading ? "Resending..." : "Resend verification code"}
+                {resendLoading ? "Resending..." : "Resend Verification Code"}
               </button>
               {resendError && (
                 <p className="text-red-500 text-center">
@@ -122,6 +138,16 @@ export default function VerifyAccountPage() {
                 </p>
               )}
             </div>
+
+            <p className="mt-6 text-sm text-gray-500 text-center">
+              Remembered your password? <br />
+              <span
+                className="text-blue-500 hover:underline cursor-pointer"
+                onClick={() => navigate("/signin")}
+              >
+                Go back to login
+              </span>
+            </p>
           </div>
         </div>
       </div>

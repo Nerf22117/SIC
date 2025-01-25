@@ -8,6 +8,7 @@ const userTypeDef = `#graphql
         gender: String!
         isVerified: Boolean!
         verificationCode: String
+        resetPasswordCode: String
     }
 
     type Query {
@@ -15,11 +16,15 @@ const userTypeDef = `#graphql
     }
 
     type Mutation {
-        signUp(input: SignUpInput!): SignUpResponse
+        signUp(input: SignUpInput!): ResponseMessage
         verifyAccount(email: String!, verificationCode: String!): User
-        resendVerificationCode(email: String!): resendVerificationCodeResponse
+        resendVerificationCode(email: String!): ResponseMessage
         signIn(input: SignInInput!): User
-        logout: LogoutResponse
+        logout: ResponseMessage
+        forgotPassword(email: String!): ResponseMessage
+        validateResetPasswordCode(email: String!, resetPasswordCode: String!): ResponseMessage
+        resetPassword(email: String!, newPassword: String!, confirmNewPassword: String!): ResponseMessage
+        resendResetPasswordCode(email: String!): ResponseMessage
     }
 
     input SignUpInput {
@@ -35,17 +40,11 @@ const userTypeDef = `#graphql
         password: String!
     }
 
-    type SignUpResponse {
+    type ResponseMessage {
         message: String!
     }
 
-    type resendVerificationCodeResponse {
-        message: String!
-    }
-
-    type LogoutResponse {
-        message: String!
-    }
+    
 `;
 
 export default userTypeDef;

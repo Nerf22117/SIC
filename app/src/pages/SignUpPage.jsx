@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useMutation } from "@apollo/client";
+import { toast } from "react-hot-toast";
+
 import RadioButton from "../components/ui/RadioButton";
 import InputField from "../components/ui/InputField";
-import { useMutation } from "@apollo/client";
+
 import { SIGN_UP } from "../graphql/mutations/user.mutation";
-import { toast } from "react-hot-toast";
 
 export default function SignUpPage() {
   const navigate = useNavigate();
@@ -69,7 +71,7 @@ export default function SignUpPage() {
               Sign Up
             </h1>
             <h1 className="text-sm font-semibold mb-6 text-gray-500 text-center">
-              Join to keep track of your expenses
+              Join our community today!
             </h1>
             <form className="space-y-4" onSubmit={handleSubmit}>
               <InputField
@@ -125,7 +127,7 @@ export default function SignUpPage() {
               <div>
                 <button
                   type="submit"
-                  className="w-full bg-black text-white p-2 rounded-md hover:bg-gray-800 focus:outline-none focus:bg-black  focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-black text-white p-2 rounded-md hover:bg-gray-800 cursor-pointer focus:outline-none focus:bg-black  focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={loading}
                 >
                   {loading ? "Loading..." : "Sign Up"}
@@ -133,14 +135,15 @@ export default function SignUpPage() {
                 {error && <p className="text-red-500">{error.message}</p>}
               </div>
             </form>
-            <div className="mt-4 text-sm text-gray-600 text-center">
-              <p>
-                Already have an account?{" "}
-                <Link to="/signin" className="text-black hover:underline">
-                  Login here
-                </Link>
-              </p>
-            </div>
+            <p className="mt-6 text-sm text-gray-500 text-center">
+              Already have an account? <br />
+              <span
+                className="text-blue-500 hover:underline cursor-pointer"
+                onClick={() => navigate("/signin")}
+              >
+                Sign In
+              </span>
+            </p>
           </div>
         </div>
       </div>

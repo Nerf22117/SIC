@@ -1,7 +1,9 @@
 import User from "../models/user.model.js";
-import bcrypt from "bcryptjs";
+
 import sendOtpEmail from "../utils/otp/sendOtpEmail.js";
 import generateOtp from "../utils/otp/generateOtp.js";
+
+import { hashValue, compareHash } from "../utils/hashUtils.js";
 
 const userResolver = {
   Mutation: {
@@ -17,15 +19,9 @@ const userResolver = {
           throw new Error("User already exists");
         }
 
-        const saltNumber = parseInt(process.env.SALT_NUMBER);
-        const salt = await bcrypt.genSalt(saltNumber);
-        const hashedPassword = await bcrypt.hash(password, salt);
-
+        const hashedPassword = await hashValue(password);
         const verificationCode = generateOtp();
-        const hashedVerificationCode = await bcrypt.hash(
-          verificationCode,
-          salt
-        );
+        const hashedVerificationCode = await hashValue(verificationCode);
 
         const newUser = new User({
           username,
@@ -61,7 +57,7 @@ const userResolver = {
           throw new Error("User not found");
         }
 
-        const validVerificationCode = await bcrypt.compare(
+        const validVerificationCode = await compareHash(
           verificationCode,
           user.verificationCode
         );
@@ -90,12 +86,7 @@ const userResolver = {
         }
 
         const verificationCode = generateOtp();
-        const saltNumber = parseInt(process.env.SALT_NUMBER);
-        const salt = await bcrypt.genSalt(saltNumber);
-        const hashedVerificationCode = await bcrypt.hash(
-          verificationCode,
-          salt
-        );
+        const hashedVerificationCode = await hashValue(verificationCode);
 
         user.verificationCode = hashedVerificationCode;
         await user.save();
@@ -174,13 +165,8 @@ const userResolver = {
           );
         }
 
-        const saltNumber = parseInt(process.env.SALT_NUMBER);
-        const salt = await bcrypt.genSalt(saltNumber);
         const resetPasswordCode = generateOtp();
-        const hashedResetPasswordCode = await bcrypt.hash(
-          resetPasswordCode,
-          salt
-        );
+        const hashedResetPasswordCode = await hashValue(resetPasswordCode);
 
         user.resetPasswordCode = hashedResetPasswordCode;
         await user.save();
@@ -208,7 +194,7 @@ const userResolver = {
           throw new Error("Reset password code not found");
         }
 
-        const validResetPasswordCode = await bcrypt.compare(
+        const validResetPasswordCode = await compareHash(
           resetPasswordCode,
           user.resetPasswordCode
         );
@@ -248,9 +234,7 @@ const userResolver = {
           throw new Error("Verify your reset password code first");
         }
 
-        const saltNumber = parseInt(process.env.SALT_NUMBER);
-        const salt = await bcrypt.genSalt(saltNumber);
-        const hashedPassword = await bcrypt.hash(newPassword, salt);
+        const hashedPassword = await hashValue(newPassword);
 
         user.password = hashedPassword;
         await user.save();
@@ -282,13 +266,8 @@ const userResolver = {
           );
         }
 
-        const saltNumber = parseInt(process.env.SALT_NUMBER);
-        const salt = await bcrypt.genSalt(saltNumber);
         const resetPasswordCode = generateOtp();
-        const hashedResetPasswordCode = await bcrypt.hash(
-          resetPasswordCode,
-          salt
-        );
+        const hashedResetPasswordCode = hashValue(resetPasswordCode);
 
         user.resetPasswordCode = hashedResetPasswordCode;
         await user.save();

@@ -2,7 +2,10 @@ import { useLocation } from "react-router-dom";
 import { useState } from "react";
 import InputField from "../components/ui/InputField";
 import { toast } from "react-hot-toast";
-import { VERIFY_ACCOUNT } from "../graphql/mutations/user.mutation";
+import {
+  VERIFY_ACCOUNT,
+  RESEND_VERIFICATION_CODE,
+} from "../graphql/mutations/user.mutation";
 import { useMutation } from "@apollo/client";
 
 export default function VerifyAccountPage() {
@@ -35,6 +38,9 @@ export default function VerifyAccountPage() {
     refetchQueries: ["GetAuthenticatedUser"],
   });
 
+  const [resendCode, { loading: resendLoading, error: resendError }] =
+    useMutation(RESEND_VERIFICATION_CODE);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const verificationCode = code.join("");
@@ -47,6 +53,19 @@ export default function VerifyAccountPage() {
         },
       });
       toast.success("Account verified successfully");
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
+  };
+
+  const handleResendCode = async () => {
+    try {
+      const response = await resendCode({ variables: { email } });
+
+      const message = response.data.resendVerificationCode.message;
+
+      toast.success(message);
     } catch (error) {
       console.log(error);
       toast.error(error.message);
@@ -83,8 +102,18 @@ export default function VerifyAccountPage() {
         >
           {loading ? "Verifying..." : "Verify"}
         </button>
-        {error && <p className="text-red-500">{error.message}</p>}
+        {error && <p className="text-red-500 text-center">{error.message}</p>}
       </form>
+      <button
+        onClick={handleResendCode}
+        className="mt-4 text-blue-500 hover:underline"
+        disabled={resendLoading}
+      >
+        {resendLoading ? "Resending..." : "Resend verification code"}
+      </button>
+      {resendError && (
+        <p className="text-red-500 text-center">{resendError.message}</p>
+      )}
     </div>
   );
 }

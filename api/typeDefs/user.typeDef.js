@@ -17,6 +17,7 @@ const userTypeDef = `#graphql
     type Mutation {
         signUp(input: SignUpInput!): SignUpResponse
         verifyAccount(email: String!, verificationCode: String!): User
+        resendVerificationCode(email: String!): resendVerificationCodeResponse
         signIn(input: SignInInput!): User
         logout: LogoutResponse
     }
@@ -35,6 +36,10 @@ const userTypeDef = `#graphql
     }
 
     type SignUpResponse {
+        message: String!
+    }
+
+    type resendVerificationCodeResponse {
         message: String!
     }
 

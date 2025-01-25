@@ -18,6 +18,14 @@ export const VERIFY_ACCOUNT = gql`
   }
 `;
 
+export const RESEND_VERIFICATION_CODE = gql`
+  mutation ResendVerificationCode($email: String!) {
+    resendVerificationCode(email: $email) {
+      message
+    }
+  }
+`;
+
 export const Sign_In = gql`
   mutation SignIn($input: SignInInput!) {
     signIn(input: $input) {

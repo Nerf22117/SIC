@@ -82,6 +82,32 @@ const userResolver = {
         throw new Error(error.message || "Internal Server Error");
       }
     },
+    resendVerificationCode: async (_, { email }) => {
+      try {
+        const user = await User.findOne({ email });
+        if (!user) {
+          throw new Error("User not found");
+        }
+
+        const verificationCode = generateOtp();
+        const saltNumber = parseInt(process.env.SALT_NUMBER);
+        const salt = await bcrypt.genSalt(saltNumber);
+        const hashedVerificationCode = await bcrypt.hash(
+          verificationCode,
+          salt
+        );
+
+        user.verificationCode = hashedVerificationCode;
+        await user.save();
+
+        await sendOtpEmail(email, verificationCode);
+
+        return { message: "Verification code sent to your email" };
+      } catch (error) {
+        console.error("Error in resendVerificationCode: ", error);
+        throw new Error(error.message || "Internal Server Error");
+      }
+    },
     signIn: async (_, { input }, context) => {
       try {
         const { email, password } = input;

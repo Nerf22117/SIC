@@ -8,9 +8,17 @@ const waterSchema = new mongoose.Schema(
       required: true,
     },
     date: {
-      type: Date,
-      defaultValue: Date.now(),
-      requried: true,
+      type: String,
+      defaultValue: () => {
+        const today = new Date();
+        return today.toISOString().split("T")[0];
+      },
+      required: true,
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Users",
+      required: true,
     },
   },
   { timestamps: true }

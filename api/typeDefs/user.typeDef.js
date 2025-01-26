@@ -6,6 +6,10 @@ const userTypeDef = `#graphql
         email: String!
         password: String!
         gender: String!
+        age: Int!
+        weight: Float!
+        height: Float!
+        activity: String!
         isVerified: Boolean!
         verificationCode: String
         resetPasswordCode: String
@@ -33,6 +37,10 @@ const userTypeDef = `#graphql
         email: String!
         password: String! 
         gender: String!
+        age: Int!
+        weight: Float!
+        height: Float!
+        activity: String!
     }
 
     input SignInInput {

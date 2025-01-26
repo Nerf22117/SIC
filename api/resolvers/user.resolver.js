@@ -9,8 +9,28 @@ const userResolver = {
   Mutation: {
     signUp: async (_, { input }) => {
       try {
-        const { username, name, email, password, gender } = input;
-        if (!username || !name || !email || !password || !gender) {
+        const {
+          username,
+          name,
+          email,
+          password,
+          gender,
+          age,
+          weight,
+          height,
+          activity,
+        } = input;
+        if (
+          !username ||
+          !name ||
+          !email ||
+          !password ||
+          !gender ||
+          !age ||
+          !weight ||
+          !height ||
+          !activity
+        ) {
           throw new Error("Please fill all fields");
         }
 
@@ -29,6 +49,10 @@ const userResolver = {
           email,
           password: hashedPassword,
           gender,
+          age,
+          weight,
+          height,
+          activity,
           verificationCode: hashedVerificationCode,
         });
 

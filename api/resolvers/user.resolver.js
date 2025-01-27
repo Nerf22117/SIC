@@ -129,7 +129,7 @@ const userResolver = {
         const user = await User.findOne({ email });
         if (!user) {
           // TODO: Change the errors to graphql errors
-  
+
           throw new GraphQLError("User not found", {
             code: "BAD_REQUEST",
             http: 400,
@@ -172,11 +172,9 @@ const userResolver = {
 
         if (!userDatabase.isVerified) {
           // TODO: Change the errors to graphql errors
-          throw new Error(
-            "Your account is not verified. Please check your email."
           throw new GraphQLError("User not found", {
-            code: "BAD_REQUEST",
-            http: 400,
+            code: "NOT_FOUND",
+            http: 404,
           });
         }
 
@@ -274,7 +272,6 @@ const userResolver = {
     validateResetPasswordCode: async (_, { email, resetPasswordCode }) => {
       try {
         if (!email || !resetPasswordCode) {
-
           // TODO: Change the errors to graphql errors
           throw new GraphQLError("Please fill all fields", {
             code: "BAD_REQUEST",
@@ -332,7 +329,6 @@ const userResolver = {
     resetPassword: async (_, { email, newPassword, confirmNewPassword }) => {
       try {
         if (!email || !newPassword || !confirmNewPassword) {
-
           throw new GraphQLError("Please fill all fields", {
             code: "BAD_REQUEST",
             http: 400,

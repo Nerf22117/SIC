@@ -60,6 +60,77 @@ const foodResolver = {
         });
       }
     },
+    updateFood: async (_, { input }) => {
+      try {
+        //Destructure the input
+        const { userId, foodId, quantity } = input;
+
+        //Check if the userId is a valid ObjectId
+        if (!mongoose.isValidObjectId(userId)) {
+          throw new GraphQLError("Invalid user id!", {
+            code: "INVALID_INPUT",
+            http: {
+              status: 400,
+            },
+          });
+        }
+
+        //Check if the foodId is a valid ObjectId
+        if (!mongoose.isValidObjectId(foodId)) {
+          throw new GraphQLError("Invalid food id!", {
+            code: "INVALID_INPUT",
+            http: {
+              status: 400,
+            },
+          });
+        }
+
+        const objectIdUserId = new mongoose.Types.ObjectId(userId);
+        const objectIdFoodId = new mongoose.Types.ObjectId(foodId);
+
+        //Check if the user exists
+        const user = await User.findById(objectIdUserId);
+
+        if (!user) {
+          throw new GraphQLError("User not Found!", {
+            code: "NOT_FOUND",
+            http: {
+              status: 404,
+            },
+          });
+        }
+
+        //Check if the food exists
+        const food = await Food.findById(objectIdFoodId);
+
+        if (!food) {
+          throw new GraphQLError("Food not Found!", {
+            code: "NOT_FOUND",
+            http: {
+              status: 404,
+            },
+          });
+        }
+
+        //Update the food quantity
+        food.quantity += quantity;
+
+        //Save the updated food
+        await food.save();
+
+        return {
+          message: "Food quantity updated!",
+        };
+      } catch (error) {
+        console.error("Error in get user foods: ", error);
+        throw new GraphQLError(error, {
+          code: "SERVER_ERROR",
+          http: {
+            status: 500,
+          },
+        });
+      }
+    },
   },
   Query: {
     getUserFoods: async (_, { input }) => {
@@ -120,8 +191,12 @@ const foodResolver = {
       try {
         //Check if the userId is a valid ObjectId
         if (!mongoose.isValidObjectId(id)) {
-          // TODO: Change the errors to graphql errors
-          throw new Error("Invalid user id!");
+          throw new GraphQLError("Invalid user id!", {
+            code: "INVALID_INPUT",
+            http: {
+              status: 400,
+            },
+          });
         }
 
         const objectIdUserId = new mongoose.Types.ObjectId(id);

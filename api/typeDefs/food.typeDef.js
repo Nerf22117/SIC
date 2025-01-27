@@ -16,6 +16,7 @@ const foodTypeDef = `#graphql
 
     type Mutation {
         createFood(input: FoodInput!): ResponseMessage
+        updateFood(input: FoodInput!): ResponseMessage
     }
 
     input GetFoodsInput {

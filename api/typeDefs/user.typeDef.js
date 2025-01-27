@@ -17,6 +17,7 @@ const userTypeDef = `#graphql
 
     type Query {
         authUser: User
+        getUserInfo(id: ID!): ResponseInfo
     }
 
     type Mutation {
@@ -47,12 +48,28 @@ const userTypeDef = `#graphql
         email: String!
         password: String!
     }
+    
+    # Review if the IMC type is necessary
+    type IMC {
+        value: Float!
+        category: String!
+    }
 
     type ResponseMessage {
         message: String!
     }
 
-    
+    type UserInfo {
+        water: Float!
+        calories: Float!
+        imc: IMC!
+    }
+
+    type ResponseInfo {
+        message: String!
+        result: UserInfo!
+    }
+
 `;
 
 export default userTypeDef;

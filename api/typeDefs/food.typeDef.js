@@ -11,16 +11,17 @@ const foodTypeDef = `#graphql
     type Query {
         getUserFoods(input: GetFoodsInput!): ResponseFoods
         getUserFood(input: GetFoodInput!): ResponseFood
+        getDailyCalories(id:ID!): ResponseCalories
     }
 
     type Mutation {
-        createFood(input: WaterInput!): ResponseMessage
+        createFood(input: FoodInput!): ResponseMessage
     }
 
     input GetFoodsInput {
         userId: ID!
-        startDate: string
-        endDate: string
+        startDate: String
+        endDate: String
     }
 
     input GetFoodInput {
@@ -28,13 +29,31 @@ const foodTypeDef = `#graphql
         foodId: ID!
     }
 
+    input FoodInput {
+        userId:ID!
+        name: String!
+        calories:Int!
+        date: String!
+        quantity: Int!
+    }
+
     type ResponseMessage {
         message: String!
     }
 
-    type ResponseWater {
+    type ResponseFoods {
+        message: String!
+        result: [Food]
+    }
+
+    type ResponseFood {
         message: String!
         result: Food
+    }
+
+    type ResponseCalories {
+        message: String!
+        result: Int!
     }
 `;
 

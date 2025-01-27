@@ -40,8 +40,7 @@ const waterResolver = {
         await newWater.save();
 
         return {
-          message:
-            "Registration successful. Check your email to verify your account.",
+          message: "Water Intake created successfuly",
         };
       } catch (error) {
         console.error("Error in get user water intake: ", error);

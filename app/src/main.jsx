@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import App from "./App.jsx";
+import { AuthProvider } from "./context/AuthContext";
 
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 
@@ -17,7 +18,9 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <ApolloProvider client={client}>
-        <App />
+        <AuthProvider>
+          <App />
+        </AuthProvider>
       </ApolloProvider>
     </BrowserRouter>
   </StrictMode>

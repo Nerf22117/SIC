@@ -55,9 +55,6 @@ const waterResolver = {
         //Destructure the input
         const { date, userId } = input;
 
-        console.log("date", date);
-        console.log("userId", userId);
-
         //Check if the userId is a valid ObjectId
         if (!mongoose.isValidObjectId(userId)) {
           throw new Error("Invalid user id!");

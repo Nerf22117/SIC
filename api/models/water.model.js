@@ -9,10 +9,7 @@ const waterSchema = new mongoose.Schema(
     },
     date: {
       type: String,
-      defaultValue: () => {
-        const today = new Date();
-        return today.toISOString().split("T")[0];
-      },
+      defaultValue: () => new Date().toISOString().split("T")[0],
       required: true,
     },
     userId: {

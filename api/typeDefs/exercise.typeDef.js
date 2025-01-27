@@ -1,0 +1,60 @@
+const exerciseTypeDef = `#graphql
+    type Exercise {
+        _id: ID!
+        activity: String!
+        calories:Int!
+        date: String!
+        duration: Int!
+        userId:ID!
+    }
+
+    type Query {
+        getUserExercises(input: GetExercisesInput!): ResponseExercises
+        getUserExercise(input: GetExerciseInput!): ResponseExercise
+        getDailyExerciseCalories(id:ID!): ResponseCalories
+    }
+
+    type Mutation {
+        createExercise(input: ExerciseInput!): ResponseMessage
+    }
+
+    input GetExercisesInput {
+        userId: ID!
+        startDate: String
+        endDate: String
+    }
+
+    input GetExerciseInput {
+        userId: ID!
+        exerciseId: ID!
+    }
+
+    input ExerciseInput {
+        userId:ID!
+        activity: String!
+        calories:Int!
+        date: String!
+        duration: Int!
+    }
+
+    type ResponseMessage {
+        message: String!
+    }
+
+    type ResponseExercises {
+        message: String!
+        result: [Exercise]
+    }
+
+    type ResponseExercise {
+        message: String!
+        result: Exercise
+    }
+
+    type ResponseCalories {
+        message: String!
+        result: Int!
+    }
+`;
+
+export default exerciseTypeDef;

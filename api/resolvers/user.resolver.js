@@ -1,3 +1,5 @@
+import { GraphQLError } from "graphql";
+
 import User from "../models/user.model.js";
 
 import sendOtpEmail from "../utils/otp/sendOtpEmail.js";
@@ -34,12 +36,18 @@ const userResolver = {
           !height ||
           !activity
         ) {
-          throw new Error("Please fill all fields");
+          throw new GraphQLError("Please fill all fields", {
+            code: "BAD_REQUEST",
+            http: 400,
+          });
         }
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-          throw new Error("User already exists");
+          throw new GraphQLError("User already exists", {
+            code: "BAD_REQUEST",
+            http: 400,
+          });
         }
 
         const hashedPassword = await hashValue(password);
@@ -78,11 +86,17 @@ const userResolver = {
         const user = await User.findOne({ email });
 
         if (!email || !verificationCode) {
-          throw new Error("Please fill all fields");
+          throw new GraphQLError("Please fill all fields", {
+            code: "BAD_REQUEST",
+            http: 400,
+          });
         }
 
         if (!user) {
-          throw new Error("User not found");
+          throw new GraphQLError("User not found", {
+            code: "BAD_REQUEST",
+            http: 400,
+          });
         }
 
         const validVerificationCode = await compareHash(
@@ -91,7 +105,10 @@ const userResolver = {
         );
 
         if (!validVerificationCode) {
-          throw new Error("Invalid verification code");
+          throw new GraphQLError("Invalid verification code", {
+            code: "BAD_REQUEST",
+            http: 400,
+          });
         }
 
         user.isVerified = true;
@@ -112,7 +129,11 @@ const userResolver = {
         const user = await User.findOne({ email });
         if (!user) {
           // TODO: Change the errors to graphql errors
-          throw new Error("User not found");
+  
+          throw new GraphQLError("User not found", {
+            code: "BAD_REQUEST",
+            http: 400,
+          });
         }
 
         const verificationCode = generateOtp();
@@ -136,7 +157,10 @@ const userResolver = {
 
         if (!email || !password) {
           // TODO: Change the errors to graphql errors
-          throw new Error("Please fill all fields");
+          throw new GraphQLError("Please fill all fields", {
+            code: "BAD_REQUEST",
+            http: 400,
+          });
         }
 
         const userDatabase = await User.findOne({ email });
@@ -150,6 +174,19 @@ const userResolver = {
           // TODO: Change the errors to graphql errors
           throw new Error(
             "Your account is not verified. Please check your email."
+          throw new GraphQLError("User not found", {
+            code: "BAD_REQUEST",
+            http: 400,
+          });
+        }
+
+        if (!userDatabase.isVerified) {
+          throw new GraphQLError(
+            "Your account is not verified. Please check your email",
+            {
+              code: "UNAUTHORIZED",
+              http: 401,
+            }
           );
         }
 
@@ -188,7 +225,11 @@ const userResolver = {
       try {
         if (!email) {
           // TODO: Change the errors to graphql errors
-          throw new Error("Please fill all fields");
+
+          throw new GraphQLError("Please fill all fields", {
+            code: "BAD_REQUEST",
+            http: 400,
+          });
         }
 
         const user = await User.findOne({ email });
@@ -199,8 +240,19 @@ const userResolver = {
 
         if (!user.isVerified) {
           // TODO: Change the errors to graphql errors
-          throw new Error(
-            "Your account is not verified. Please validate your account."
+          throw new GraphQLError("User not found", {
+            code: "BAD_REQUEST",
+            http: 400,
+          });
+        }
+
+        if (!user.isVerified) {
+          throw new GraphQLError(
+            "Your account is not verified. Please validate your account.",
+            {
+              code: "UNAUTHORIZED",
+              http: 401,
+            }
           );
         }
 
@@ -222,8 +274,12 @@ const userResolver = {
     validateResetPasswordCode: async (_, { email, resetPasswordCode }) => {
       try {
         if (!email || !resetPasswordCode) {
+
           // TODO: Change the errors to graphql errors
-          throw new Error("Please fill all fields");
+          throw new GraphQLError("Please fill all fields", {
+            code: "BAD_REQUEST",
+            http: 400,
+          });
         }
 
         const user = await User.findOne({ email });
@@ -234,7 +290,17 @@ const userResolver = {
 
         if (!user.resetPasswordCode) {
           // TODO: Change the errors to graphql errors
-          throw new Error("Reset password code not found");
+          throw new GraphQLError("User not found", {
+            code: "BAD_REQUEST",
+            http: 400,
+          });
+        }
+
+        if (!user.resetPasswordCode) {
+          throw new GraphQLError("Reset password code not found", {
+            code: "BAD_REQUEST",
+            http: 400,
+          });
         }
 
         const validResetPasswordCode = await compareHash(
@@ -244,7 +310,10 @@ const userResolver = {
 
         if (!validResetPasswordCode) {
           // TODO: Change the errors to graphql errors
-          throw new Error("Invalid reset password code");
+          throw new GraphQLError("Invalid reset password code", {
+            code: "BAD_REQUEST",
+            http: 400,
+          });
         }
 
         user.resetPasswordCode = null;
@@ -263,13 +332,18 @@ const userResolver = {
     resetPassword: async (_, { email, newPassword, confirmNewPassword }) => {
       try {
         if (!email || !newPassword || !confirmNewPassword) {
-          // TODO: Change the errors to graphql errors
-          throw new Error("Please fill all fields");
+
+          throw new GraphQLError("Please fill all fields", {
+            code: "BAD_REQUEST",
+            http: 400,
+          });
         }
 
         if (newPassword !== confirmNewPassword) {
-          // TODO: Change the errors to graphql errors
-          throw new Error("Passwords do not match");
+          throw new GraphQLError("Password do not match", {
+            code: "BAD_REQUEST",
+            http: 400,
+          });
         }
 
         const user = await User.findOne({ email });
@@ -280,7 +354,17 @@ const userResolver = {
 
         if (user.resetPasswordCode) {
           // TODO: Change the errors to graphql errors
-          throw new Error("Verify your reset password code first");
+          throw new GraphQLError("User not found", {
+            code: "BAD_REQUEST",
+            http: 400,
+          });
+        }
+
+        if (user.resetPasswordCode) {
+          throw new GraphQLError("Verify your reset password code first", {
+            code: "UNAUTHORIZED",
+            http: 401,
+          });
         }
 
         const hashedPassword = await hashValue(newPassword);
@@ -301,8 +385,10 @@ const userResolver = {
     resendResetPasswordCode: async (_, { email }) => {
       try {
         if (!email) {
-          // TODO: Change the errors to graphql errors
-          throw new Error("Please fill all fields");
+          throw new GraphQLError("Please fill all fields", {
+            code: "BAD_REQUEST",
+            http: 400,
+          });
         }
 
         const user = await User.findOne({ email });
@@ -313,9 +399,19 @@ const userResolver = {
         }
 
         if (!user.isVerified) {
-          // TODO: Change the errors to graphql errors
-          throw new Error(
-            "Your account is not verified. Please validate your account."
+          throw new GraphQLError("User not found", {
+            code: "BAD_REQUEST",
+            http: 400,
+          });
+        }
+
+        if (!user.isVerified) {
+          throw new GraphQLError(
+            "Your account is not verified. Please validate your account",
+            {
+              code: "UNAUTHORIZED",
+              http: 400,
+            }
           );
         }
 

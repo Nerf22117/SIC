@@ -12,9 +12,9 @@ const exerciseSchema = new mongoose.Schema(
       required: true,
     },
     date: {
-      type: Date,
+      type: String,
       required: true,
-      defaultValue: Date.now(),
+      defaultValue: () => new Date().toISOString().split("T")[0],
     },
     calories: {
       type: Number,

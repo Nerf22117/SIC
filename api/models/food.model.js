@@ -14,7 +14,7 @@ const foodSchema = new mongoose.Schema(
     date: {
       type: String,
       required: true,
-      defaultValue: Date.now(),
+      defaultValue: () => new Date().toISOString().split("T")[0],
     },
     quantity: {
       type: Number,

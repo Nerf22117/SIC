@@ -7,3 +7,11 @@ export const CREATE_WATER = gql`
         }
     }
 `;	
+
+export const REMOVE_WATER = gql`
+    mutation RemoveWater($input: WaterInput!) {
+        removeWater(input: $input) {
+            message
+        }
+    }
+`;	

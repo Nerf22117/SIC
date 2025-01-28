@@ -86,7 +86,7 @@ function App() {
   return (
     <div className="flex">
       {currentRoute?.showSideBar && <SideBar />}
-      <div className="flex-1 p-10">
+      <div className="flex-1 p-10 ">
         <Routes>
           {routes.map((route) => (
             <Route

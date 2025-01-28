@@ -7,6 +7,8 @@ import NotFoundPage from "./pages/NotFoundPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import VerifyPasswordResetPage from "./pages/VerifyPasswordResetPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import FoodListPage from "./pages/FoodListPage";
+import FoodDetailsPage from "./pages/FoodDetailsPage";
 import ExercisesPage from "./pages/ExercisesPage";
 import { useQuery } from "@apollo/client";
 import { GET_AUTHENTICATED_USER } from "./graphql/queries/user.query";
@@ -23,6 +25,9 @@ const routes = [
   { path: "/forgotpassword", element: <ForgotPasswordPage /> },
   { path: "/verifypasswordreset", element: <VerifyPasswordResetPage /> },
   { path: "/resetpassword", element: <ResetPasswordPage /> },
+
+  { path: "/foodlist", element: <FoodListPage />, showSideBar: true },
+  { path: "/food/:id", element: <FoodDetailsPage />, showSideBar: true },
   { path: "/exercises", element: <ExercisesPage />, showSideBar: true },
 ];
 
@@ -43,13 +48,18 @@ function App() {
   const renderRoute = (route) => {
     const isAuthenticated = !!data?.authUser;
 
-    const protectedRoutes = ["/", "/exercises"];
+    const protectedRoutes = ["/", "/exercises", "/foodlist", "/food/:id"];
 
     if (protectedRoutes.includes(route.path) && !isAuthenticated) {
       return <Navigate to="/signin" replace />;
     }
-
-    const publicRoutes = ["/signin", "/signup", "/forgotpassword", "/verifypasswordreset", "/resetpassword"];
+    const publicRoutes = [
+      "/signin",
+      "/signup",
+      "/forgotpassword",
+      "/verifypasswordreset",
+      "/resetpassword",
+    ];
     if (publicRoutes.includes(route.path) && isAuthenticated) {
       return <Navigate to="/" replace />;
     }
@@ -57,12 +67,26 @@ function App() {
     return route.element;
   };
 
-  const currentRoute = routes.find(route => route.path === location.pathname);
+  const matchPath = (routePath, pathname) => {
+    const routeParts = routePath.split("/").filter(Boolean);
+    const pathParts = pathname.split("/").filter(Boolean);
+
+    if (routeParts.length !== pathParts.length) return false;
+
+    return routeParts.every((part, index) => {
+      return part.startsWith(":") || part === pathParts[index];
+    });
+  };
+
+  const currentRoute = routes.find((route) =>
+    matchPath(route.path, location.pathname)
+  );
+  console.log(currentRoute);
 
   return (
     <div className="flex">
       {currentRoute?.showSideBar && <SideBar />}
-      <div className="flex-1 p-10">
+      <div className="flex-1 p-10 ">
         <Routes>
           {routes.map((route) => (
             <Route

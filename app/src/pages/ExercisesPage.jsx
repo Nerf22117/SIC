@@ -22,23 +22,25 @@ export default function ExercisesPage() {
             ];
             setMuscularGroups(uniqueMuscularGroups);
 
-            let filteredData = data;
+      let filteredData = data;
 
-            if (searchQuery) {
-                filteredData = data.filter((product) =>
-                    product.activity.toLowerCase().includes(searchQuery.toLowerCase())
-                );
-            }
+      if (searchQuery) {
+        filteredData = data.filter((product) =>
+          product.activity.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
 
-            if (muscularGroup) {
-                filteredData = filteredData.filter((product) =>
-                    product.muscular_group.toLowerCase().includes(muscularGroup.toLowerCase())
-                );
-            }
+      if (muscularGroup) {
+        filteredData = filteredData.filter((product) =>
+          product.muscular_group
+            .toLowerCase()
+            .includes(muscularGroup.toLowerCase())
+        );
+      }
 
-            setProducts(filteredData);
-        });
-    }, [searchQuery, muscularGroup]);
+      setProducts(filteredData);
+    });
+  }, [searchQuery, muscularGroup]);
 
     const handleAdd = async (id) => {
         const exercise = products.find((product) => product.id === id);
@@ -142,10 +144,9 @@ export default function ExercisesPage() {
                     ))}
                 </div>
 
-                {products.length === 0 && (
-                    <p className="text-gray-500 mt-4">No exercises found.</p>
-                )}
-            </div>
-        </div>
-    );
+      {products.length === 0 && (
+        <p className="text-gray-500 mt-4">No exercises found.</p>
+      )}
+    </div>
+  );
 }

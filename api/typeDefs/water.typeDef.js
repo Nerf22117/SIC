@@ -12,6 +12,7 @@ const waterTypeDef = `#graphql
 
     type Mutation {
         createWater(input: WaterInput!): ResponseMessage
+        removeWater(input: WaterInput!): ResponseMessage
     }
 
     input GetWaterInput {

@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client";
 import toast from "react-hot-toast";
-import { CREATE_WATER } from "../graphql/mutations/water.mutation";
+import { CREATE_WATER, REMOVE_WATER } from "../graphql/mutations/water.mutation";
 import { GET_WATER_INTAKE, GET_WATER_OBJECTIVE_DAY } from '../graphql/queries/water.query';
 import { useAuth } from "../context/AuthContext";
 import React, { useState, useEffect } from "react";
@@ -31,6 +31,7 @@ export default function HomePage() {
   const { authUser } = useAuth();
 
   const [createWater, { loading: loadingWater, error }] = useMutation(CREATE_WATER);
+  const [removeWater, { loading: loadingRemoveWater, errorRemoveWater }] = useMutation(REMOVE_WATER);
 
   const handleAddWater = async () => {
     try {
@@ -45,6 +46,25 @@ export default function HomePage() {
       });
 
       const message = response.data.createWater.message;
+      toast.success(message);
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
+  };
+  const handleRemoveWater = async () => {
+    try {
+      const response = await removeWater({
+        variables: {
+          input: {
+            quantity: 1,
+            date: new Date().toISOString().split("T")[0],
+            userId: authUser?._id,
+          },
+        },
+      });
+
+      const message = response.data.removeWater.message;
       toast.success(message);
     } catch (error) {
       console.log(error);
@@ -95,24 +115,48 @@ export default function HomePage() {
     }
   }, [dataWaterIntake, numCups]);
 
-  const handleClick = async (index) => {
-    let currentStep = 0;
-    const newSteps = [...steps];
-    newSteps[index] = currentStep;
-    setSteps(newSteps);
-    await handleAddWater();
-    refetchWaterIntake();
 
+  const animateAddWater = (index) => {
+    let currentStep = steps[index];
+    const newSteps = [...steps];
     const interval = setInterval(() => {
-      currentStep++;
-      if (currentStep >= frames.length) {
+      if (currentStep >= frames.length - 1) {
         clearInterval(interval);
       } else {
+        currentStep++;
         newSteps[index] = currentStep;
         setSteps([...newSteps]);
       }
     }, 100);
   };
+
+  const animateRemoveWater = (index) => {
+    let currentStep = steps[index];
+    const newSteps = [...steps];
+    const interval = setInterval(() => {
+      if (currentStep <= 0) {
+        clearInterval(interval);
+      } else {
+        currentStep--;
+        newSteps[index] = currentStep;
+        setSteps([...newSteps]);
+      }
+    }, 100);
+  };
+
+  const handleClick = async (index) => {
+    if (steps[index] === frames.length - 1) {
+      // Remover água
+      await handleRemoveWater();
+      animateRemoveWater(index);
+    } else {
+      // Adicionar água
+      await handleAddWater();
+      animateAddWater(index);
+    }
+    refetchWaterIntake();
+  };
+
 
   const dataWater = {
     labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],

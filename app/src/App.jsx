@@ -48,7 +48,7 @@ function App() {
   const renderRoute = (route) => {
     const isAuthenticated = !!data?.authUser;
 
-    const protectedRoutes = ["/", "/exercises"];
+    const protectedRoutes = ["/", "/exercises", "/foodlist", "/food/:id"];
 
     if (protectedRoutes.includes(route.path) && !isAuthenticated) {
       return <Navigate to="/signin" replace />;

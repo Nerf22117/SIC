@@ -49,7 +49,6 @@ function App() {
       return <Navigate to="/signin" replace />;
     }
 
-    // Redirecionar usuário autenticado de páginas públicas para a página inicial
     const publicRoutes = ["/signin", "/signup", "/forgotpassword", "/verifypasswordreset", "/resetpassword"];
     if (publicRoutes.includes(route.path) && isAuthenticated) {
       return <Navigate to="/" replace />;

@@ -1,13 +1,10 @@
-const API_URL = "https://api.api-ninjas.com/v1/caloriesburned";
+const API_URL = "http://localhost:3001/exercises";
 
-export const getCaloriesBurned = async (activity) => {
-  const response = await fetch(`${API_URL}?activity=${activity}`, {
-    method: "GET",
-    headers: {
-      "X-Api-Key": "mJvhnfQMg6FTsFgwDQpeWw==YFBSmJrORK8sQSUE",
-    },
-  });
+export const getExercises = async () => {
+  const response = await fetch(API_URL);
   const data = await response.json();
+
   console.log(data);
+
   return data;
 };

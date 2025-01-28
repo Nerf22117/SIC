@@ -9,6 +9,8 @@ import { hashValue, compareHash } from "../utils/hashUtils.js";
 import waterIntake from "../utils/waterIntake.js";
 import basalMetabolism from "../utils/basalMetabolism.js";
 import imc from "../utils/imc.js";
+import customError from "../utils/customErrors.js";
+import normalizeUsername from "../utils/normalizeUsername.js";
 
 const userResolver = {
   Mutation: {
@@ -36,23 +38,22 @@ const userResolver = {
           !height ||
           !activity
         ) {
-          throw new GraphQLError("Please fill all fields", {
-            code: "BAD_REQUEST",
-            http: 400,
-          });
+          throw customError.badRequest("Please fill all fields 123");
         }
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-          throw new GraphQLError("User already exists", {
-            code: "BAD_REQUEST",
-            http: 400,
-          });
+          throw customError.conflict("User already exists");
         }
 
         const hashedPassword = await hashValue(password);
         const verificationCode = generateOtp();
         const hashedVerificationCode = await hashValue(verificationCode);
+
+        const normalizedUsername = normalizeUsername(username);
+        // https://avatar-placeholder.iran.liara.run/
+        const boyProfilePic = `https://avatar.iran.liara.run/public/boy?username=${normalizedUsername}`;
+        const girlProfilePic = `https://avatar.iran.liara.run/public/girl?username=${normalizedUsername}`;
 
         const newUser = new User({
           username,
@@ -60,6 +61,7 @@ const userResolver = {
           email,
           password: hashedPassword,
           gender,
+          profilePicture: gender === "male" ? boyProfilePic : girlProfilePic,
           age,
           weight,
           height,
@@ -76,9 +78,10 @@ const userResolver = {
             "Registration successful. Check your email to verify your account.",
         };
       } catch (error) {
-        // TODO: Change the errors to graphql errors
         console.error("Error in signUp: ", error);
-        throw new Error(error.message || "Internal Server Error");
+        throw customError.internalServerError(
+          error.message || "Internal Server Error"
+        );
       }
     },
     verifyAccount: async (_, { email, verificationCode }, context) => {
@@ -86,17 +89,11 @@ const userResolver = {
         const user = await User.findOne({ email });
 
         if (!email || !verificationCode) {
-          throw new GraphQLError("Please fill all fields", {
-            code: "BAD_REQUEST",
-            http: 400,
-          });
+          throw customError.badRequest("Please fill all fields");
         }
 
         if (!user) {
-          throw new GraphQLError("User not found", {
-            code: "BAD_REQUEST",
-            http: 400,
-          });
+          throw customError.notFound("User not found");
         }
 
         const validVerificationCode = await compareHash(
@@ -105,10 +102,7 @@ const userResolver = {
         );
 
         if (!validVerificationCode) {
-          throw new GraphQLError("Invalid verification code", {
-            code: "BAD_REQUEST",
-            http: 400,
-          });
+          throw customError.badRequest("Invalid verification code");
         }
 
         user.isVerified = true;
@@ -119,21 +113,17 @@ const userResolver = {
 
         return user;
       } catch (error) {
-        // TODO: Change the errors to graphql errors
         console.error("Error in verifyAccount: ", error);
-        throw new Error(error.message || "Internal Server Error");
+        throw customError.internalServerError(
+          error.message || "Internal Server Error"
+        );
       }
     },
     resendVerificationCode: async (_, { email }) => {
       try {
         const user = await User.findOne({ email });
         if (!user) {
-          // TODO: Change the errors to graphql errors
-
-          throw new GraphQLError("User not found", {
-            code: "BAD_REQUEST",
-            http: 400,
-          });
+          throw customError.notFound("User not found");
         }
 
         const verificationCode = generateOtp();
@@ -146,9 +136,10 @@ const userResolver = {
 
         return { message: "Verification code sent to your email" };
       } catch (error) {
-        // TODO: Change the errors to graphql errors
         console.error("Error in resendVerificationCode: ", error);
-        throw new Error(error.message || "Internal Server Error");
+        throw customError.internalServerError(
+          error.message || "Internal Server Error"
+        );
       }
     },
     signIn: async (_, { input }, context) => {
@@ -156,35 +147,22 @@ const userResolver = {
         const { email, password } = input;
 
         if (!email || !password) {
-          // TODO: Change the errors to graphql errors
-          throw new GraphQLError("Please fill all fields", {
-            code: "BAD_REQUEST",
-            http: 400,
-          });
+          throw customError.badRequest("Please fill all fields");
         }
 
         const userDatabase = await User.findOne({ email });
 
         if (!userDatabase) {
-          // TODO: Change the errors to graphql errors
-          throw new Error("User not found");
+          throw customError.notFound("User not found");
         }
 
         if (!userDatabase.isVerified) {
-          // TODO: Change the errors to graphql errors
-          throw new GraphQLError("User not found", {
-            code: "NOT_FOUND",
-            http: 404,
-          });
+          throw customError.notFound("User not found");
         }
 
         if (!userDatabase.isVerified) {
-          throw new GraphQLError(
-            "Your account is not verified. Please check your email",
-            {
-              code: "UNAUTHORIZED",
-              http: 401,
-            }
+          throw customError.unauthorized(
+            "Your account is not verified. Please check your email"
           );
         }
 
@@ -197,9 +175,10 @@ const userResolver = {
 
         return user;
       } catch (error) {
-        // TODO: Change the errors to graphql errors
         console.error("Error in signIn: ", error);
-        throw new Error(error.message || "Internal Server Error");
+        throw customError.internalServerError(
+          error.message || "Internal Server Error"
+        );
       }
     },
     logout: async (_, __, context) => {
@@ -214,44 +193,25 @@ const userResolver = {
 
         return { message: "Logout successful" };
       } catch (error) {
-        // TODO: Change the errors to graphql errors
         console.error("Error in logout: ", error);
-        throw new Error(error.message || "Internal Server Error");
+        throw customError.internalServerError(
+          error.message || "Internal Server Error"
+        );
       }
     },
     forgotPassword: async (_, { email }) => {
       try {
         if (!email) {
-          // TODO: Change the errors to graphql errors
-
-          throw new GraphQLError("Please fill all fields", {
-            code: "BAD_REQUEST",
-            http: 400,
-          });
+          throw customError.badRequest("Please fill all fields");
         }
 
         const user = await User.findOne({ email });
         if (!user) {
-          // TODO: Change the errors to graphql errors
-          throw new Error("User not found");
+          throw customError.notFound("User not found");
         }
 
         if (!user.isVerified) {
-          // TODO: Change the errors to graphql errors
-          throw new GraphQLError("User not found", {
-            code: "BAD_REQUEST",
-            http: 400,
-          });
-        }
-
-        if (!user.isVerified) {
-          throw new GraphQLError(
-            "Your account is not verified. Please validate your account.",
-            {
-              code: "UNAUTHORIZED",
-              http: 401,
-            }
-          );
+          throw customError.unauthorized("User not verified");
         }
 
         const resetPasswordCode = generateOtp();
@@ -264,40 +224,25 @@ const userResolver = {
 
         return { message: "Reset password code sent to your email" };
       } catch (error) {
-        // TODO: Change the errors to graphql errors
         console.error("Error in forgotPassword: ", error);
-        throw new Error(error.message || "Internal Server Error");
+        throw customError.internalServerError(
+          error.message || "Internal Server Error"
+        );
       }
     },
     validateResetPasswordCode: async (_, { email, resetPasswordCode }) => {
       try {
         if (!email || !resetPasswordCode) {
-          // TODO: Change the errors to graphql errors
-          throw new GraphQLError("Please fill all fields", {
-            code: "BAD_REQUEST",
-            http: 400,
-          });
+          throw customError.badRequest("Please fill all fields");
         }
 
         const user = await User.findOne({ email });
         if (!user) {
-          // TODO: Change the errors to graphql errors
-          throw new Error("User not found");
+          throw customError.notFound("User not found");
         }
 
         if (!user.resetPasswordCode) {
-          // TODO: Change the errors to graphql errors
-          throw new GraphQLError("User not found", {
-            code: "BAD_REQUEST",
-            http: 400,
-          });
-        }
-
-        if (!user.resetPasswordCode) {
-          throw new GraphQLError("Reset password code not found", {
-            code: "BAD_REQUEST",
-            http: 400,
-          });
+          throw customError.badRequest("Reset password code not found");
         }
 
         const validResetPasswordCode = await compareHash(
@@ -306,11 +251,7 @@ const userResolver = {
         );
 
         if (!validResetPasswordCode) {
-          // TODO: Change the errors to graphql errors
-          throw new GraphQLError("Invalid reset password code", {
-            code: "BAD_REQUEST",
-            http: 400,
-          });
+          throw customError.badRequest("Invalid reset password code");
         }
 
         user.resetPasswordCode = null;
@@ -321,46 +262,31 @@ const userResolver = {
             "Reset code validated successfully. You can now reset your password",
         };
       } catch (error) {
-        // TODO: Change the errors to graphql errors
         console.error("Error in validateResetPasswordCode: ", error);
-        throw new Error(error.message || "Internal Server Error");
+        throw customError.internalServerError(
+          error.message || "Internal Server Error"
+        );
       }
     },
     resetPassword: async (_, { email, newPassword, confirmNewPassword }) => {
       try {
         if (!email || !newPassword || !confirmNewPassword) {
-          throw new GraphQLError("Please fill all fields", {
-            code: "BAD_REQUEST",
-            http: 400,
-          });
+          throw customError.badRequest("Please fill all fields");
         }
 
         if (newPassword !== confirmNewPassword) {
-          throw new GraphQLError("Password do not match", {
-            code: "BAD_REQUEST",
-            http: 400,
-          });
+          throw customError.badRequest("Password do not match");
         }
 
         const user = await User.findOne({ email });
         if (!user) {
-          // TODO: Change the errors to graphql errors
-          throw new Error("User not found");
+          throw customError.notFound("User not found");
         }
 
         if (user.resetPasswordCode) {
-          // TODO: Change the errors to graphql errors
-          throw new GraphQLError("User not found", {
-            code: "BAD_REQUEST",
-            http: 400,
-          });
-        }
-
-        if (user.resetPasswordCode) {
-          throw new GraphQLError("Verify your reset password code first", {
-            code: "UNAUTHORIZED",
-            http: 401,
-          });
+          throw customError.unauthorized(
+            "Verify your reset password code first"
+          );
         }
 
         const hashedPassword = await hashValue(newPassword);
@@ -373,41 +299,27 @@ const userResolver = {
             "Password reset successful. Redirecting you to the login page...",
         };
       } catch (error) {
-        // TODO: Change the errors to graphql errors
         console.error("Error in resetPassword: ", error);
-        throw new Error(error.message || "Internal Server Error");
+        throw customError.internalServerError(
+          error.message || "Internal Server Error"
+        );
       }
     },
     resendResetPasswordCode: async (_, { email }) => {
       try {
         if (!email) {
-          throw new GraphQLError("Please fill all fields", {
-            code: "BAD_REQUEST",
-            http: 400,
-          });
+          throw customError.badRequest("Please fill all fields");
         }
 
         const user = await User.findOne({ email });
 
         if (!user) {
-          // TODO: Change the errors to graphql errors
-          throw new Error("User not found");
+          throw customError.notFound("User not found");
         }
 
         if (!user.isVerified) {
-          throw new GraphQLError("User not found", {
-            code: "BAD_REQUEST",
-            http: 400,
-          });
-        }
-
-        if (!user.isVerified) {
-          throw new GraphQLError(
-            "Your account is not verified. Please validate your account",
-            {
-              code: "UNAUTHORIZED",
-              http: 400,
-            }
+          throw customError.unauthorized(
+            "Your account is not verified. Please validate your account"
           );
         }
 
@@ -421,9 +333,10 @@ const userResolver = {
 
         return { message: "Reset password code sent to your email" };
       } catch (error) {
-        // TODO: Change the errors to graphql errors
         console.error("Error in resendResetPasswordCode: ", error);
-        throw new Error(error.message || "Internal Server Error");
+        throw customError.internalServerError(
+          error.message || "Internal Server Error"
+        );
       }
     },
   },
@@ -433,9 +346,10 @@ const userResolver = {
         const user = await context.getUser();
         return user;
       } catch (error) {
-        // TODO: Change the errors to graphql errors
         console.error("Error in authUser: ", error);
-        throw new Error(error.message || "Internal Server Error");
+        throw customError.internalServerError(
+          error.message || "Internal Server Error"
+        );
       }
     },
 
@@ -443,8 +357,7 @@ const userResolver = {
       try {
         const user = await User.findById(id);
         if (!user) {
-          // TODO: Change the errors to graphql errors
-          throw new Error("User not found");
+          throw customError.notFound("User not found");
         }
 
         const data = {
@@ -468,9 +381,10 @@ const userResolver = {
           },
         };
       } catch (error) {
-        // TODO: Change the errors to graphql errors
         console.error("Error in getUserInfo: ", error);
-        throw new Error(error.message || "Internal Server Error");
+        throw customError.internalServerError(
+          error.message || "Internal Server Error"
+        );
       }
     },
   },

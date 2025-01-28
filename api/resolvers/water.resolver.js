@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 import User from "../models/user.model.js";
 import Water from "../models/water.model.js";
 
+import { GraphQLError } from "graphql";
+
 const waterResolver = {
   Mutation: {
     createWater: async (_, { input }) => {
@@ -11,7 +13,10 @@ const waterResolver = {
 
         //If user don't exists, retrieved an error
         if (!userId) {
-          throw new Error("You are not authenticated!");
+          throw new GraphQLError("You are not authenticated!", {
+            code: "UNAUTHORIZED",
+            http: 401,
+          });
         }
 
         //Check if user already has a water intake for the day
@@ -56,7 +61,10 @@ const waterResolver = {
 
         //Check if the userId is a valid ObjectId
         if (!mongoose.isValidObjectId(userId)) {
-          throw new Error("Invalid user id!");
+          throw new GraphQLError("Invalid user id!", {
+            code: "UNAUTHORIZED",
+            http: 401,
+          });
         }
 
         const objectIdUserId = new mongoose.Types.ObjectId(userId);
@@ -65,7 +73,10 @@ const waterResolver = {
         const user = await User.findById(objectIdUserId);
 
         if (!user) {
-          throw new Error("User not found!");
+          throw new GraphQLError("User not found!", {
+            code: "BAD_REQUEST",
+            http: 400,
+          });
         }
 
         //Retrieve the water intake of the user for the day

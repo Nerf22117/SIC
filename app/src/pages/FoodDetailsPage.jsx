@@ -34,7 +34,7 @@ export default function FoodDetailsPage() {
     const fetchFoodDetails = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3001/foodItems/${id}`
+          `http://localhost:3002/foodItems/${id}`
         );
         setFood(response.data);
 

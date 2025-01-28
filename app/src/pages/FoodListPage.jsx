@@ -11,7 +11,7 @@ export default function FoodListPage() {
   useEffect(() => {
     const fetchFoods = async () => {
       try {
-        const response = await axios.get("http://localhost:3001/foodItems");
+        const response = await axios.get("http://localhost:3002/foodItems");
         setFoods(response.data);
         const uniqueCategories = [
           "All",

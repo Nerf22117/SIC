@@ -23,7 +23,7 @@ const exerciseSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      reqyured: true,
+      required: true,
     },
   },
   { timestamps: true }

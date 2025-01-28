@@ -1,7 +1,9 @@
 import mongoose from "mongoose";
+
 import User from "../models/user.model.js";
 import Food from "../models/food.model.js";
-import { GraphQLError } from "graphql";
+
+import customError from "../utils/customErrors.js";
 
 const foodResolver = {
   Mutation: {
@@ -12,12 +14,7 @@ const foodResolver = {
 
         //If user don't exist, retrieve an error
         if (!userId) {
-          throw new GraphQLError("User not Found!", {
-            code: "NOT_FOUND",
-            http: {
-              status: 404,
-            },
-          });
+          throw customError.unauthorized("You are not authenticated");
         }
 
         //Check if user already has a food for the day
@@ -52,12 +49,9 @@ const foodResolver = {
         };
       } catch (error) {
         console.error("Error in get user foods: ", error);
-        throw new GraphQLError(error, {
-          code: "SERVER_ERROR",
-          http: {
-            status: 500,
-          },
-        });
+        throw customError.internalServerError(
+          error.message || "Internal Server Error"
+        );
       }
     },
     updateFood: async (_, { input }) => {
@@ -67,22 +61,12 @@ const foodResolver = {
 
         //Check if the userId is a valid ObjectId
         if (!mongoose.isValidObjectId(userId)) {
-          throw new GraphQLError("Invalid user id!", {
-            code: "INVALID_INPUT",
-            http: {
-              status: 400,
-            },
-          });
+          throw customError.badRequest("Invalid user id!");
         }
 
         //Check if the foodId is a valid ObjectId
         if (!mongoose.isValidObjectId(foodId)) {
-          throw new GraphQLError("Invalid food id!", {
-            code: "INVALID_INPUT",
-            http: {
-              status: 400,
-            },
-          });
+          throw customError.badRequest("Invalid food id!");
         }
 
         const objectIdUserId = new mongoose.Types.ObjectId(userId);
@@ -92,24 +76,14 @@ const foodResolver = {
         const user = await User.findById(objectIdUserId);
 
         if (!user) {
-          throw new GraphQLError("User not Found!", {
-            code: "NOT_FOUND",
-            http: {
-              status: 404,
-            },
-          });
+          throw customError.notFound("User not found!");
         }
 
         //Check if the food exists
         const food = await Food.findById(objectIdFoodId);
 
         if (!food) {
-          throw new GraphQLError("Food not Found!", {
-            code: "NOT_FOUND",
-            http: {
-              status: 404,
-            },
-          });
+          throw customError.notFound("Food not found!");
         }
 
         //Update the food quantity
@@ -123,12 +97,9 @@ const foodResolver = {
         };
       } catch (error) {
         console.error("Error in get user foods: ", error);
-        throw new GraphQLError(error, {
-          code: "SERVER_ERROR",
-          http: {
-            status: 500,
-          },
-        });
+        throw customError.internalServerError(
+          error.message || "Internal Server Error"
+        );
       }
     },
   },
@@ -140,8 +111,7 @@ const foodResolver = {
 
         //Check if the userId is a valid ObjectId
         if (!mongoose.isValidObjectId(userId)) {
-          // TODO: Change the errors to graphql errors
-          throw new Error("Invalid user id!");
+          throw customError.badRequest("Invalid user id!");
         }
 
         const objectIdUserId = new mongoose.Types.ObjectId(userId);
@@ -150,12 +120,7 @@ const foodResolver = {
         const user = await User.findById(objectIdUserId);
 
         if (!user) {
-          throw new GraphQLError("User not Found!", {
-            code: "NOT_FOUND",
-            http: {
-              status: 404,
-            },
-          });
+          throw customError.notFound("User not found!");
         }
 
         let query = {
@@ -178,12 +143,9 @@ const foodResolver = {
         };
       } catch (error) {
         console.error("Error in get user water intake: ", error);
-        throw new GraphQLError(error, {
-          code: "SERVER_ERROR",
-          http: {
-            status: 500,
-          },
-        });
+        throw customError.internalServerError(
+          error.message || "Internal Server Error"
+        );
       }
     },
 
@@ -191,12 +153,7 @@ const foodResolver = {
       try {
         //Check if the userId is a valid ObjectId
         if (!mongoose.isValidObjectId(id)) {
-          throw new GraphQLError("Invalid user id!", {
-            code: "INVALID_INPUT",
-            http: {
-              status: 400,
-            },
-          });
+          throw customError.badRequest("Invalid user id!");
         }
 
         const objectIdUserId = new mongoose.Types.ObjectId(id);
@@ -205,12 +162,7 @@ const foodResolver = {
         const user = await User.findById(objectIdUserId);
 
         if (!user) {
-          throw new GraphQLError("User not Found!", {
-            code: "NOT_FOUND",
-            http: {
-              status: 404,
-            },
-          });
+          throw customError.notFound("User not found!");
         }
 
         //Retrieve the foods of the user
@@ -231,12 +183,9 @@ const foodResolver = {
         };
       } catch (error) {
         console.error("Error in get daily calories: ", error);
-        throw new GraphQLError(error, {
-          code: "SERVER_ERROR",
-          http: {
-            status: 500,
-          },
-        });
+        throw customError.internalServerError(
+          error.message || "Internal Server Error"
+        );
       }
     },
   },

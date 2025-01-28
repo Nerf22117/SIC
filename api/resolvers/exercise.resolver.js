@@ -1,7 +1,9 @@
 import mongoose from "mongoose";
+
 import User from "../models/user.model.js";
 import Exercise from "../models/exercise.model.js";
-import { GraphQLError } from "graphql";
+
+import customError from "../utils/customErrors.js";
 
 const exerciseResolver = {
   Mutation: {
@@ -12,12 +14,7 @@ const exerciseResolver = {
 
         //If user don't exist, retrieve an error
         if (!userId) {
-          throw new GraphQLError("User not Found!", {
-            code: "NOT_FOUND",
-            http: {
-              status: 404,
-            },
-          });
+          throw customError.unauthorized("You are not authenticated");
         }
 
         //Check if user already has a exercise for the day
@@ -56,12 +53,9 @@ const exerciseResolver = {
         };
       } catch (error) {
         console.error("Error in get user Exercises: ", error);
-        throw new GraphQLError(error, {
-          code: "SERVER_ERROR",
-          http: {
-            status: 500,
-          },
-        });
+        throw customError.internalServerError(
+          error.message || "Internal Server Error"
+        );
       }
     },
   },
@@ -73,12 +67,7 @@ const exerciseResolver = {
 
         //Check if the userId is a valid ObjectId
         if (!mongoose.isValidObjectId(userId)) {
-          throw new GraphQLError("Invalid user id!", {
-            code: "INVALID_INPUT",
-            http: {
-              status: 400,
-            },
-          });
+          throw customError.badRequest("Invalid user id!");
         }
 
         const objectIdUserId = new mongoose.Types.ObjectId(userId);
@@ -87,12 +76,7 @@ const exerciseResolver = {
         const user = await User.findById(objectIdUserId);
 
         if (!user) {
-          throw new GraphQLError("User not Found!", {
-            code: "NOT_FOUND",
-            http: {
-              status: 404,
-            },
-          });
+          throw customError.notFound("User not found!");
         }
 
         let query = {
@@ -115,12 +99,9 @@ const exerciseResolver = {
         };
       } catch (error) {
         console.error("Error in get user exercises: ", error);
-        throw new GraphQLError(error, {
-          code: "SERVER_ERROR",
-          http: {
-            status: 500,
-          },
-        });
+        throw customError.internalServerError(
+          error.message || "Internal Server Error"
+        );
       }
     },
 
@@ -128,12 +109,7 @@ const exerciseResolver = {
       try {
         //Check if the userId is a valid ObjectId
         if (!mongoose.isValidObjectId(id)) {
-          throw new GraphQLError("Invalid user id!", {
-            code: "INVALID_INPUT",
-            http: {
-              status: 400,
-            },
-          });
+          throw customError.badRequest("Invalid user id!");
         }
 
         const objectIdUserId = new mongoose.Types.ObjectId(id);
@@ -142,12 +118,7 @@ const exerciseResolver = {
         const user = await User.findById(objectIdUserId);
 
         if (!user) {
-          throw new GraphQLError("User not Found!", {
-            code: "NOT_FOUND",
-            http: {
-              status: 404,
-            },
-          });
+          throw customError.notFound("User not found!");
         }
 
         //Retrieve the exercises of the user
@@ -168,12 +139,9 @@ const exerciseResolver = {
         };
       } catch (error) {
         console.error("Error in get daily calories: ", error);
-        throw new GraphQLError(error, {
-          code: "SERVER_ERROR",
-          http: {
-            status: 500,
-          },
-        });
+        throw customError.internalServerError(
+          error.message || "Internal Server Error"
+        );
       }
     },
   },

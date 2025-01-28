@@ -52,6 +52,43 @@ const waterResolver = {
         );
       }
     },
+    removeWater: async (_, { input }) => {
+      try {
+        //Destructure the input
+        const { quantity, date, userId } = input;
+
+        //If user don't exists, retrieved an error
+        if (!userId) {
+          throw customError.unauthorized("You are not authenticated");
+        }
+
+        //Check if user already has a water intake for the day
+        const existingWater = await Water.findOne({ date, userId });
+
+        if (!existingWater) {
+          throw customError.badRequest("You haven't drunk water today!");
+        }
+
+        //If user doesn't have a water intake for the day, return an error
+        if (existingWater && existingWater.quantity == 0) {
+          throw customError.badRequest("You haven't drunk water today!");
+        }
+
+        existingWater.quantity -= quantity;
+
+        //Save the updated water intake
+        await existingWater.save();
+
+        return {
+          message: "Water intake updated!",
+        };
+      } catch (error) {
+        console.error("Error in get user water intake: ", error);
+        throw customError.internalServerError(
+          error.message || "Internal Server Error"
+        );
+      }
+    },
   },
   Query: {
     getUserWaterIntake: async (_, { input }) => {

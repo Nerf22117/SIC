@@ -8,6 +8,7 @@ const waterTypeDef = `#graphql
 
     type Query {
         getUserWaterIntake(input: GetWaterInput!): ResponseWater
+        getUserWaters(input: GetWatersInput!): ResponseWaters
     }
 
     type Mutation {
@@ -18,6 +19,12 @@ const waterTypeDef = `#graphql
     input GetWaterInput {
         date: String!
         userId: ID!
+    }
+
+    input GetWatersInput {
+        userId: ID!
+        startDate: String
+        endDate: String
     }
 
     input WaterInput {
@@ -33,6 +40,11 @@ const waterTypeDef = `#graphql
     type ResponseWater {
         message: String!
         result: Water
+    }
+
+    type ResponseWaters {
+        message: String!
+        result: [Water]
     }
 
     

@@ -20,3 +20,15 @@ export const GET_WATER_OBJECTIVE_DAY = gql`
         }
     }
 `;
+
+export const GET_WATER_DATES = gql`
+  query GetUserWaters($input: GetWatersInput!) {
+    getUserWaters(input: $input) {
+      message
+      result {
+        date
+        quantity
+      }
+    }
+  }
+`;

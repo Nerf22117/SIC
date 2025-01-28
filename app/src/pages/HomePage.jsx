@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@apollo/client";
 import toast from "react-hot-toast";
 import { CREATE_WATER, REMOVE_WATER } from "../graphql/mutations/water.mutation";
-import { GET_WATER_INTAKE, GET_WATER_OBJECTIVE_DAY } from '../graphql/queries/water.query';
+import { GET_WATER_INTAKE, GET_WATER_OBJECTIVE_DAY, GET_WATER_DATES } from '../graphql/queries/water.query';
 import { useAuth } from "../context/AuthContext";
 import React, { useState, useEffect } from "react";
 import { Line } from "react-chartjs-2";
@@ -146,28 +146,56 @@ export default function HomePage() {
 
   const handleClick = async (index) => {
     if (steps[index] === frames.length - 1) {
-      // Remover água
       await handleRemoveWater();
       animateRemoveWater(index);
     } else {
-      // Adicionar água
       await handleAddWater();
       animateAddWater(index);
     }
     refetchWaterIntake();
   };
 
+  const getLastWeekDates = () => {
+    const dates = [];
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      dates.push(date.toISOString().split('T')[0]);
+    }
+    return dates;
+  };
 
+  const lastWeekDates = getLastWeekDates();
+  const startDate = lastWeekDates[0];
+  const endDate = lastWeekDates[lastWeekDates.length - 1];
+
+  const { data: waterWeek, loading: loadingWaterWeek, error: errorWaterWeek } = useQuery(GET_WATER_DATES, {
+    variables: { input: { startDate, endDate, userId } },
+  });
+
+  useEffect(() => {
+    if (waterWeek) {
+      console.log(waterWeek);
+    }
+  }, [waterWeek]);
+
+  const waterWeekData = lastWeekDates.map(date => {
+    const dayData = waterWeek?.getUserWaters?.result?.find(day => day.date === date);
+    return dayData ? dayData.quantity * 0.25 : 0;
+  });
   const dataWater = {
     labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
     datasets: [
       {
         label: "Water Consumption (L)",
-        data: [2, 2.5, 3, 2, 2.8, 3.2, 2.7],
+        data: waterWeekData,
         backgroundColor: "rgba(54, 162, 235, 0.6)",
       },
     ],
   };
+
+  if (loadingGetWater || loadingGetWaterObjective || loadingWaterWeek) return <p>Loading...</p>;
+  if (errorGetWater || errorGetWaterObjective || errorWaterWeek) return <p>Error: {errorGetWater?.message || errorGetWaterObjective?.message || errorWaterWeek?.message}</p>;
   const dataFood = {
     labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
     datasets: [

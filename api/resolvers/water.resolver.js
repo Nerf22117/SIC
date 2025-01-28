@@ -153,6 +153,49 @@ const waterResolver = {
         );
       }
     },
+    getUserWaters: async (_, { input }) => {
+      try {
+        //Destructure the input
+        const { startDate, endDate, userId } = input;
+
+        //Check if the userId is a valid ObjectId
+        if (!mongoose.isValidObjectId(userId)) {
+          throw customError.badRequest("Invalid user id!");
+        }
+
+        const objectIdUserId = new mongoose.Types.ObjectId(userId);
+
+        //Check if the user exists
+        const user = await User.findById(objectIdUserId);
+
+        if (!user) {
+          throw customError.notFound("User not found!");
+        }
+
+        let query = {
+          userId: objectIdUserId,
+        };
+
+        if (startDate && endDate) {
+          query.date = {
+            $gte: startDate,
+            $lte: endDate,
+          };
+        }
+        //Retrieve the waters of the user
+        const waters = await Water.find(query);
+
+        return {
+          message: "Waters retrieved!",
+          result: waters,
+        };
+      } catch (error) {
+        console.error("Error in get user waters: ", error);
+        throw customError.internalServerError(
+          error.message || "Internal Server Error"
+        );
+      }
+    },
   },
 };
 

@@ -28,7 +28,7 @@ const exerciseResolver = {
         if (existingExercise) {
           existingExercise.duration += duration;
 
-          //Save the updated food
+          //Save the updated exercise
           await existingExercise.save();
 
           return {

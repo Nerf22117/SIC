@@ -5,7 +5,7 @@ import Exercise from "../models/exercise.model.js";
 
 import customError from "../utils/customErrors.js";
 
-import sortExercises from "../utils/sortExercises.js";
+import { sortExercises } from "../utils/sort.js";
 
 const exerciseResolver = {
   Mutation: {

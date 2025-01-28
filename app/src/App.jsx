@@ -9,9 +9,7 @@ import VerifyPasswordResetPage from "./pages/VerifyPasswordResetPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import FoodListPage from "./pages/FoodListPage";
 import FoodDetailsPage from "./pages/FoodDetailsPage";
-
 import ExercisesPage from "./pages/ExercisesPage";
-
 import { useQuery } from "@apollo/client";
 import { GET_AUTHENTICATED_USER } from "./graphql/queries/user.query";
 import { Toaster } from "react-hot-toast";

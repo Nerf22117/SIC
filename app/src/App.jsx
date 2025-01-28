@@ -7,6 +7,9 @@ import NotFoundPage from "./pages/NotFoundPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import VerifyPasswordResetPage from "./pages/VerifyPasswordResetPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import FoodListPage from "./pages/FoodListPage";
+import FoodDetailsPage from "./pages/FoodDetailsPage";
+
 import { useQuery } from "@apollo/client";
 import { GET_AUTHENTICATED_USER } from "./graphql/queries/user.query";
 import { Toaster } from "react-hot-toast";
@@ -22,6 +25,8 @@ const routes = [
   { path: "/forgotpassword", element: <ForgotPasswordPage /> },
   { path: "/verifypasswordreset", element: <VerifyPasswordResetPage /> },
   { path: "/resetpassword", element: <ResetPasswordPage /> },
+  { path: "/foodlist", element: <FoodListPage />, showSideBar: true },
+  { path: "/food/:id", element: <FoodDetailsPage />, showSideBar: true },
 ];
 
 function App() {
@@ -43,13 +48,27 @@ function App() {
     if (route.path === "/" && !isAuthenticated) {
       return <Navigate to="/signin" />;
     }
-    if (route.path !== "/" && isAuthenticated) {
+    /* if (route.path !== "/" && isAuthenticated) {
       return <Navigate to="/" />;
-    }
+    } */
     return route.element;
   };
 
-  const currentRoute = routes.find(route => route.path === location.pathname);
+  const matchPath = (routePath, pathname) => {
+    const routeParts = routePath.split("/").filter(Boolean);
+    const pathParts = pathname.split("/").filter(Boolean);
+
+    if (routeParts.length !== pathParts.length) return false;
+
+    return routeParts.every((part, index) => {
+      return part.startsWith(":") || part === pathParts[index];
+    });
+  };
+
+  const currentRoute = routes.find((route) =>
+    matchPath(route.path, location.pathname)
+  );
+  console.log(currentRoute);
 
   return (
     <div className="flex">

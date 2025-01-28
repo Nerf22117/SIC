@@ -9,7 +9,7 @@ const exerciseTypeDef = `#graphql
     }
 
     type Query {
-        getUserExercises(input: GetExercisesInput!, limit:Int, offset:Int, order:OrderEnum): ResponseExercises
+        getUserExercises(input: GetExercisesInput!, limit:Int, offset:Int, order:OrderEnum, search:String): ResponseExercises
         getUserExercise(input: GetExerciseInput!): ResponseExercise
         getDailyExerciseCalories(id:ID!): ResponseCalories
     }

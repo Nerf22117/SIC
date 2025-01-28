@@ -64,7 +64,7 @@ const exerciseResolver = {
   Query: {
     getUserExercises: async (
       _,
-      { input, limit = 10, offset = 0, order = "" }
+      { input, limit = 10, offset = 0, order = "", search = "" }
     ) => {
       try {
         //Destructure the input
@@ -97,6 +97,12 @@ const exerciseResolver = {
 
         //Retrieve the Exercises of the user
         let exercises = await Exercise.find(query).skip(offset).limit(limit);
+
+        if (search) {
+          exercises = exercises.filter((exercise) =>
+            exercise.activity.toLowerCase().includes(search.toLowerCase())
+          );
+        }
 
         if (order) {
           exercises = sortExercises(exercises, order);

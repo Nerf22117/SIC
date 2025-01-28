@@ -1,28 +1,28 @@
 {
   "exercises": [
     {
-      "id": 1,
+      "id": "1",
       "activity": "Running",
       "calories_per_hour": 500,
       "muscular_group": "Legs",
       "gif": "https://gymvisual.com/img/p/1/8/6/8/8/18688.gif"
     },
     {
-      "id": 2,
+      "id": "2",
       "activity": "Weightlifting",
       "calories_per_hour": 400,
       "muscular_group": "Arms",
       "gif": "https://gymvisual.com/img/p/6/9/8/4/6984.gif"
     },
     {
-      "id": 3,
+      "id": "3",
       "activity": "Cycling",
       "calories_per_hour": 600,
       "muscular_group": "Legs",
       "gif": "https://gymvisual.com/img/p/1/8/2/6/0/18260.gif"
     },
     {
-      "id": 4,
+      "id": "4",
       "activity": "Yoga",
       "calories_per_hour": 300,
       "muscular_group": "Core",

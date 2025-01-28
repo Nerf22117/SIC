@@ -5,6 +5,8 @@ import Exercise from "../models/exercise.model.js";
 
 import customError from "../utils/customErrors.js";
 
+import sortExercises from "../utils/sortExercises.js";
+
 const exerciseResolver = {
   Mutation: {
     createExercise: async (_, { input }) => {
@@ -60,7 +62,10 @@ const exerciseResolver = {
     },
   },
   Query: {
-    getUserExercises: async (_, { input }) => {
+    getUserExercises: async (
+      _,
+      { input, limit = 10, offset = 0, order = "", search = "" }
+    ) => {
       try {
         //Destructure the input
         const { startDate, endDate, userId } = input;
@@ -91,7 +96,17 @@ const exerciseResolver = {
         }
 
         //Retrieve the Exercises of the user
-        const exercises = await Exercise.find(query);
+        let exercises = await Exercise.find(query).skip(offset).limit(limit);
+
+        if (search) {
+          exercises = exercises.filter((exercise) =>
+            exercise.activity.toLowerCase().includes(search.toLowerCase())
+          );
+        }
+
+        if (order) {
+          exercises = sortExercises(exercises, order);
+        }
 
         return {
           message: "Exercises retrieved!",

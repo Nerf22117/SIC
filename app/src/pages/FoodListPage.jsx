@@ -61,17 +61,21 @@ export default function FoodListPage() {
           className="mt-4 h-150 overflow-y-auto border border-gray-300 rounded-lg"
           style={{ maxHeight: "800px" }}
         >
-          {filteredFoods.map((food) => (
-            <Link
-              to={`/food/${food.id}`}
-              key={food.id}
-              className="border-b border-gray-200 p-4 block hover:bg-gray-100"
-            >
-              <h2 className="text-xl font-bold">{food.name}</h2>
-              <p className="text-gray-500">{food.category}</p>
-              <p className="text-gray-500">{food.calories} calories</p>
-            </Link>
-          ))}
+          {filteredFoods.length > 0 ? (
+            filteredFoods.map((food) => (
+              <Link
+                to={`/food/${food.id}`}
+                key={food.id}
+                className="border-b border-gray-200 p-4 block hover:bg-gray-100"
+              >
+                <h2 className="text-xl font-bold">{food.name}</h2>
+                <p className="text-gray-500">{food.category}</p>
+                <p className="text-gray-500">{food.calories} calories</p>
+              </Link>
+            ))
+          ) : (
+            <p className="p-4 text-center text-gray-500">No results found.</p>
+          )}
         </div>
       </div>
     </div>

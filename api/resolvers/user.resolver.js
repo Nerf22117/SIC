@@ -10,6 +10,7 @@ import waterIntake from "../utils/waterIntake.js";
 import basalMetabolism from "../utils/basalMetabolism.js";
 import imc from "../utils/imc.js";
 import customError from "../utils/customErrors.js";
+import normalizeUsername from "../utils/normalizeUsername.js";
 
 const userResolver = {
   Mutation: {
@@ -49,12 +50,18 @@ const userResolver = {
         const verificationCode = generateOtp();
         const hashedVerificationCode = await hashValue(verificationCode);
 
+        const normalizedUsername = normalizeUsername(username);
+        // https://avatar-placeholder.iran.liara.run/
+        const boyProfilePic = `https://avatar.iran.liara.run/public/boy?username=${normalizedUsername}`;
+        const girlProfilePic = `https://avatar.iran.liara.run/public/girl?username=${normalizedUsername}`;
+
         const newUser = new User({
           username,
           name,
           email,
           password: hashedPassword,
           gender,
+          profilePicture: gender === "male" ? boyProfilePic : girlProfilePic,
           age,
           weight,
           height,

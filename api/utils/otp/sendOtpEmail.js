@@ -16,9 +16,9 @@ const sendOtpEmail = async (email, otp, type = "verification") => {
 
   // Determine the template path based on the type of OTP
   if (type === "passwordReset") {
-    templatePath = "html/password_reset.html";
+    templatePath = "api/html/password_reset.html";
   } else {
-    templatePath = "html/email_verification.html";
+    templatePath = "api/html/email_verification.html";
   }
 
   const emailTemplate = fs.readFileSync(templatePath, "utf8");

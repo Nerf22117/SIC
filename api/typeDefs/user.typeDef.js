@@ -6,6 +6,7 @@ const userTypeDef = `#graphql
         email: String!
         password: String!
         gender: String!
+        profilePicture: String!
         age: Int!
         weight: Float!
         height: Float!

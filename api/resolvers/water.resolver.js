@@ -43,7 +43,7 @@ const waterResolver = {
         await newWater.save();
 
         return {
-          message: "Water Intake created successfuly",
+          message: "Water Intake created successfully",
         };
       } catch (error) {
         console.error("Error in get user water intake: ", error);

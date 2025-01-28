@@ -18,17 +18,22 @@ import { configurePassport } from "./config/passport.config.js";
 import mergedResolvers from "./resolvers/index.js";
 import mergedTypeDefs from "./typeDefs/index.js";
 
+// Initialize Passport strategies
 configurePassport();
 
+// Initialize Express application
 const app = express();
+// Create an HTTP server
 const httpServer = http.createServer(app);
 
+// Configure MongoDB session store
 const MongoDBStore = connectMongo(session);
 const store = new MongoDBStore({
-  uri: process.env.MONGO_URI,
-  collection: "sessions",
+  uri: process.env.MONGO_URI, // MongoDB connection URI from environment variables
+  collection: "sessions", // Collection name for storing sessions
 });
 
+// Set up session middleware
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
@@ -38,25 +43,31 @@ app.use(
       maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
       httpOnly: true, // prevent from Cross-Site Scripting (XSS) attacks
     },
-    store,
+    store, // Use MongoDB to store session data
   })
 );
 
+// Initialize Passport middleware
 app.use(passport.initialize());
+// Enable persistent login sessions
 app.use(passport.session());
 
+// Initialize Apollo Server
 const server = new ApolloServer({
   typeDefs: mergedTypeDefs,
   resolvers: mergedResolvers,
   plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
 });
 
+// Start the Apollo Server
 await server.start();
+
+// Configure middleware for the /graphql endpoint
 app.use(
   "/graphql",
   cors({
-    origin: "http://localhost:3000",
-    credentials: true,
+    origin: "http://localhost:3000", // Allow requests from the frontend
+    credentials: true, // Allow sending cookies
   }),
   express.json(),
   expressMiddleware(server, {
@@ -64,6 +75,10 @@ app.use(
   })
 );
 
+// Start the HTTP server
 await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve));
+
+// Connect to MongoDB
 await connectDB();
+
 console.log(`🚀 Server ready at http://localhost:4000/graphql`);

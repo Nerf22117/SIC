@@ -43,7 +43,7 @@ const SideBar = () => {
           </li>
           <li className="mb-2">
             <Link
-              to="/signup"
+              to="/exercises"
               className="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700"
             >
               Exercise

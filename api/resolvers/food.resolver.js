@@ -4,6 +4,7 @@ import User from "../models/user.model.js";
 import Food from "../models/food.model.js";
 
 import customError from "../utils/customErrors.js";
+import { sortFoods } from "../utils/sort.js";
 
 const foodResolver = {
   Mutation: {
@@ -104,7 +105,10 @@ const foodResolver = {
     },
   },
   Query: {
-    getUserFoods: async (_, { input }) => {
+    getUserFoods: async (
+      _,
+      { input, limit = 10, offset = 0, order = "", search = "" }
+    ) => {
       try {
         //Destructure the input
         const { startDate, endDate, userId } = input;
@@ -135,7 +139,15 @@ const foodResolver = {
         }
 
         //Retrieve the foods of the user
-        const foods = await Food.find(query);
+        let foods = await Food.find(query).skip(offset).limit(limit);
+
+        if (search) {
+          foods = foods.filter((food) => food.name.includes(search));
+        }
+
+        if (order) {
+          foods = sortFoods(foods, order);
+        }
 
         return {
           message: "Foods retrieved!",

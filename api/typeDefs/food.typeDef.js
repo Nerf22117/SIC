@@ -9,7 +9,7 @@ const foodTypeDef = `#graphql
     }
 
     type Query {
-        getUserFoods(input: GetFoodsInput!): ResponseFoods
+        getUserFoods(input: GetFoodsInput!, limit:Int, offset:Int, order:OrderEnum, search:String): ResponseFoods
         getUserFood(input: GetFoodInput!): ResponseFood
         getDailyCalories(id:ID!): ResponseCalories
     }
@@ -55,6 +55,17 @@ const foodTypeDef = `#graphql
     type ResponseCalories {
         message: String!
         result: Int!
+    }
+
+    enum OrderEnum {
+        NAME_ASC
+        NAME_DESC
+        DATE_ASC
+        DATE_DESC
+        CALORIES_ASC
+        CALORIES_DESC
+        QUANTITY_ASC
+        QUANTITY_DESC
     }
 `;
 

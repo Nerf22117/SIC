@@ -7,6 +7,7 @@ export default function FoodListPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [categories, setCategories] = useState([]);
+  const [sortOrder, setSortOrder] = useState("");
 
   useEffect(() => {
     const fetchFoods = async () => {
@@ -34,6 +35,19 @@ export default function FoodListPage() {
     return matchesSearchTerm && matchesCategory;
   });
 
+  const sortedFoods = [...filteredFoods].sort((a, b) => {
+    if (sortOrder === "nameAsc") {
+      return a.name.localeCompare(b.name);
+    } else if (sortOrder === "nameDesc") {
+      return b.name.localeCompare(a.name);
+    } else if (sortOrder === "caloriesAsc") {
+      return a.calories - b.calories;
+    } else if (sortOrder === "caloriesDesc") {
+      return b.calories - a.calories;
+    }
+    return 0;
+  });
+
   return (
     <div>
       <div className="p-6">
@@ -45,24 +59,37 @@ export default function FoodListPage() {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <select
-          className="border border-gray-300 p-2 mt-4 w-full"
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-        >
-          {categories.map((category) => (
-            <option key={category} value={category}>
-              {category}
-            </option>
-          ))}
-        </select>
+        <div className="flex justify-between">
+          <select
+            className="border border-gray-300 p-2 mt-4 w-full"
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+          >
+            {categories.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
+          <select
+            className="border border-gray-300 p-2 mt-4 w-full"
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+          >
+            <option value="">Sort by</option>
+            <option value="nameAsc">Name (A-Z)</option>
+            <option value="nameDesc">Name (Z-A)</option>
+            <option value="caloriesAsc">Calories (Lowest to Highest)</option>
+            <option value="caloriesDesc">Calories (Highest to Lowest)</option>
+          </select>
+        </div>
 
         <div
           className="mt-4 h-150 overflow-y-auto border border-gray-300 rounded-lg"
           style={{ maxHeight: "800px" }}
         >
-          {filteredFoods.length > 0 ? (
-            filteredFoods.map((food) => (
+          {sortedFoods.length > 0 ? (
+            sortedFoods.map((food) => (
               <Link
                 to={`/food/${food.id}`}
                 key={food.id}

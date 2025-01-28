@@ -6,6 +6,7 @@ export default function ExercisesPage() {
   const [muscularGroup, setMuscularGroup] = useState("");
   const [products, setProducts] = useState([]);
   const [muscularGroups, setMuscularGroups] = useState([]);
+  const [sortOrder, setSortOrder] = useState("");
 
   useEffect(() => {
     getExercises().then((data) => {

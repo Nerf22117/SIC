@@ -1,8 +1,9 @@
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import toast from "react-hot-toast";
 import { CREATE_WATER } from "../graphql/mutations/water.mutation";
+import { GET_WATER_INTAKE, GET_WATER_OBJECTIVE_DAY } from '../graphql/queries/water.query';
 import { useAuth } from "../context/AuthContext";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -29,7 +30,7 @@ ChartJS.register(
 export default function HomePage() {
   const { authUser } = useAuth();
 
-  const [createWater, { loadingWater, error }] = useMutation(CREATE_WATER);
+  const [createWater, { loading: loadingWater, error }] = useMutation(CREATE_WATER);
 
   const handleAddWater = async () => {
     try {
@@ -51,7 +52,27 @@ export default function HomePage() {
     }
   };
 
-  const [steps, setSteps] = useState(Array(8).fill(0));
+  const userId = authUser?._id; 
+  const date = new Date().toISOString().split('T')[0]; 
+
+  const { data: dataWaterIntake, loading: loadingGetWater, error: errorGetWater, refetch: refetchWaterIntake } = useQuery(GET_WATER_INTAKE, {
+    variables: { date, userId },
+  });
+  const { data: dataWaterObjective, loading: loadingGetWaterObjective, error: errorGetWaterObjective } = useQuery(GET_WATER_OBJECTIVE_DAY, {
+    variables: { id: userId },
+  });
+
+  const waterIntakeInLiters = dataWaterIntake?.getUserWaterIntake?.result?.quantity
+    ? (dataWaterIntake.getUserWaterIntake.result.quantity * 0.25).toFixed(2)
+    : '0.00';
+
+  const waterObjective = dataWaterObjective?.getUserInfo?.result?.water
+    ? (dataWaterObjective.getUserInfo.result.water).toFixed(2)
+    : '0.00';
+
+  const numCups = Math.ceil(waterObjective / 0.25); 
+
+  const [steps, setSteps] = useState(Array(numCups).fill(0));
   const frames = [
     "../../public/glass/fase-1.png",
     "../../public/glass/fase-2.png",
@@ -63,12 +84,24 @@ export default function HomePage() {
     "../../public/glass/fase-8.png",
   ];
 
-  const handleClick = (index) => {
+  useEffect(() => {
+    if (dataWaterIntake) {
+      const waterIntake = dataWaterIntake.getUserWaterIntake.result.quantity;
+      const newSteps = Array(numCups).fill(0);
+      for (let i = 0; i < waterIntake; i++) {
+        newSteps[i] = frames.length - 1; 
+      }
+      setSteps(newSteps);
+    }
+  }, [dataWaterIntake, numCups]);
+
+  const handleClick = async (index) => {
     let currentStep = 0;
     const newSteps = [...steps];
     newSteps[index] = currentStep;
     setSteps(newSteps);
-    handleAddWater();
+    await handleAddWater();
+    refetchWaterIntake();
 
     const interval = setInterval(() => {
       currentStep++;
@@ -78,7 +111,7 @@ export default function HomePage() {
         newSteps[index] = currentStep;
         setSteps([...newSteps]);
       }
-    }, 100); // Tempo entre frames
+    }, 100);
   };
 
   const dataWater = {
@@ -112,6 +145,9 @@ export default function HomePage() {
     ],
   };
 
+  if (loadingGetWater || loadingGetWaterObjective) return <p>Loading...</p>;
+  if (errorGetWater || errorGetWaterObjective) return <p>Error: {errorGetWater?.message || errorGetWaterObjective?.message}</p>;
+
   return (
     <div>
       <div className="p-6">
@@ -143,7 +179,7 @@ export default function HomePage() {
           <div className="bg-white shadow-md rounded-lg p-6 col-span-3">
             <h3 className="text-xl font-bold">Daily Water</h3>
             <div className="flex space-x-2 mt-4">
-              {[...Array(8)].map((_, index) => (
+              {[...Array(numCups)].map((_, index) => (
                 <div
                   key={index}
                   disabled={loadingWater}
@@ -172,6 +208,10 @@ export default function HomePage() {
                   </AnimatePresence>
                 </div>
               ))}
+            </div>
+            <div>
+              <p className="mt-4 text-lg font-bold">Total Water Intake: {waterIntakeInLiters} liters</p>
+              <p className="mt-4 text-lg font-bold">Daily Water Objective: {waterObjective} liters</p>
             </div>
           </div>
         </div>

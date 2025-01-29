@@ -50,6 +50,8 @@ export default function ExercisesPage() {
             date: new Date().toISOString().split("T")[0],
             duration: durations[id],
             userId: authUser?._id,
+            muscularGroup: exercise.muscular_group,
+            gif: exercise.gif,
         };
 
         try {

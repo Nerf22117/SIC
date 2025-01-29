@@ -5,7 +5,10 @@ const foodSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-      unique: true,
+    },
+    foodId: {
+      type: Number,
+      required: true,
     },
     calories: {
       type: Number,
@@ -18,6 +21,10 @@ const foodSchema = new mongoose.Schema(
     },
     quantity: {
       type: Number,
+      required: true,
+    },
+    image: {
+      type: String,
       required: true,
     },
     userId: {

@@ -1,52 +1,52 @@
 @import "tailwindcss";
 
 .glass-container {
-    width: 100px;
-    height: 200px;
-    cursor: pointer;
-    overflow: hidden;
-    position: relative;
+  width: 100px;
+  height: 200px;
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+}
+
+.glass {
+  width: 100%;
+  height: 100%;
+  background: url("../public/glass/fase-1.png") no-repeat center;
+  background-size: contain;
+  animation: none;
+}
+
+.glass.animate {
+  animation: fill-animation 2s steps(7) forwards;
+}
+
+@keyframes fill-animation {
+  0% {
+    background-image: url("../public/glass/fase-1.png");
   }
-  
-  .glass {
-    width: 100%;
-    height: 100%;
-    background: url("../public/glass/fase-1.png") no-repeat center;
-    background-size: contain;
-    animation: none;
+  12.5% {
+    background-image: url("../public/glass/fase-2.png");
   }
-  
-  .glass.animate {
-    animation: fill-animation 2s steps(7) forwards;
+  25% {
+    background-image: url("../public/glass/fase-3.png");
   }
-  
-  @keyframes fill-animation {
-    0% {
-      background-image: url("../public/glass/fase-1.png");
-    }
-    12.5% {
-      background-image: url("../public/glass/fase-2.png");
-    }
-    25% {
-      background-image: url("../public/glass/fase-3.png");
-    }
-    37.5% {
-      background-image: url("../public/glass/fase-4.png");
-    }
-    50% {
-      background-image: url("../public/glass/fase-5.png");
-    }
-    62.5% {
-      background-image: url("../public/glass/fase-6.png");
-    }
-    75% {
-      background-image: url("../public/glass/fase-7.png");
-    }
-    100% {
-      background-image: url("../public/glass/fase-8.png");
-    }
+  37.5% {
+    background-image: url("../public/glass/fase-4.png");
   }
-  
-  body {
-    overflow: hidden;
+  50% {
+    background-image: url("../public/glass/fase-5.png");
   }
+  62.5% {
+    background-image: url("../public/glass/fase-6.png");
+  }
+  75% {
+    background-image: url("../public/glass/fase-7.png");
+  }
+  100% {
+    background-image: url("../public/glass/fase-8.png");
+  }
+}
+
+/* body {
+;
+  } */

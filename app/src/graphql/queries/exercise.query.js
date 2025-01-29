@@ -22,6 +22,8 @@ export const GET_USER_EXERCISES = gql`
         calories
         date
         duration
+        muscularGroup
+        gif
       }
     }
   }

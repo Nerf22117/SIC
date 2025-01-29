@@ -5,7 +5,9 @@ const foodTypeDef = `#graphql
         calories:Int!
         date: String!
         quantity: Int!
+        image: String!
         userId:ID!
+        foodId: ID!
     }
 
     type Query {
@@ -36,6 +38,8 @@ const foodTypeDef = `#graphql
         calories:Int!
         date: String!
         quantity: Int!
+        image: String!
+        foodId: ID!
     }
 
     type ResponseMessage {

@@ -11,7 +11,7 @@ const foodResolver = {
     createFood: async (_, { input }) => {
       try {
         //Destructure the input
-        const { userId, name, calories, date, quantity } = input;
+        const { userId, name, calories, date, quantity, image, foodId } = input;
 
         //If user don't exist, retrieve an error
         if (!userId) {
@@ -40,6 +40,8 @@ const foodResolver = {
           userId,
           calories,
           name,
+          image,
+          foodId,
         });
 
         //Save the new food
@@ -156,7 +158,7 @@ const foodResolver = {
           result: foods,
         };
       } catch (error) {
-        console.error("Error in get user water intake: ", error);
+        console.error("Error in get user foods: ", error);
         throw customError.internalServerError(
           error.message || "Internal Server Error"
         );

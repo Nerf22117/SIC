@@ -22,6 +22,9 @@ export const GET_USER_FOODS = gql`
         date
         name
         quantity
+        image
+        userId
+        foodId
       }
     }
   }

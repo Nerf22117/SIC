@@ -204,6 +204,59 @@ const foodResolver = {
         );
       }
     },
+    getCaloriesDate: async (_, { input }) => {
+      try {
+        // Destructure the input
+        const { startDate, endDate, userId } = input;
+
+        // Check if the userId is a valid ObjectId
+        if (!mongoose.isValidObjectId(userId)) {
+          throw customError.badRequest("Invalid user id!");
+        }
+
+        const objectIdUserId = new mongoose.Types.ObjectId(userId);
+
+        // Check if the user exists
+        const user = await User.findById(objectIdUserId);
+
+        if (!user) {
+          throw customError.notFound("User not found!");
+        }
+
+        let query = {
+          userId: objectIdUserId,
+        };
+
+        if (startDate && endDate) {
+          if (startDate > endDate) {
+            throw customError.badRequest(
+              "Start date must be less than end date!"
+            );
+          }
+          query.date = {
+            $gte: startDate,
+            $lte: endDate,
+          };
+        }
+
+        // Retrieve the foods of the user
+        const foods = await Food.find(query);
+        let arrayCalories = foods.map((food) => ({
+          date: food.date,
+          calories: food.calories * food.quantity,
+        }));
+
+        return {
+          message: "Calories retrieved!",
+          result: arrayCalories,
+        };
+      } catch (error) {
+        console.error("Error in get daily calories: ", error);
+        throw customError.internalServerError(
+          error.message || "Internal Server Error"
+        );
+      }
+    },
   },
 };
 

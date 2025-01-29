@@ -39,3 +39,14 @@ export const GET_EXERCISE_USER_CATEGORIES = gql`
     }
   }
 `;
+export const GET_EXERCISES_DATES = gql`
+  query GetUserExercises($input: GetExercisesInput!) {
+    getExercisesDates(input: $input) {
+      message
+      result {
+        date
+        duration
+      }
+    }
+  }
+`;

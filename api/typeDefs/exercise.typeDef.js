@@ -13,6 +13,7 @@ const exerciseTypeDef = `#graphql
     type Query {
         getUserExercises(input: GetExercisesInput!, limit:Int, offset:Int, order:OrderEnum, search:String, category:String ): ResponseExercises
         getDailyExerciseCalories(id:ID!): ResponseCalories2
+        getExercisesDates(input:GetExercisesInput!): ResponseExercises
         getUserExerciseCategory(id:ID!): ResponseCategories
     }
 

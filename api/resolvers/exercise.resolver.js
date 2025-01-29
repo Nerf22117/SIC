@@ -181,6 +181,53 @@ const exerciseResolver = {
         );
       }
     },
+    getExercisesDates: async (_, { input }) => {
+      try {
+        //Destructure the input
+        const { startDate, endDate, userId } = input;
+
+        //Check if the userId is a valid ObjectId
+        if (!mongoose.isValidObjectId(userId)) {
+          throw customError.badRequest("Invalid user id!");
+        }
+
+        const objectIdUserId = new mongoose.Types.ObjectId(userId);
+
+        //Check if the user exists
+        const user = await User.findById(objectIdUserId);
+
+        if (!user) {
+          throw customError.notFound("User not found!");
+        }
+
+        let query = {
+          userId: objectIdUserId,
+        };
+
+        if (startDate && endDate) {
+          if (startDate > endDate) {
+            throw customError.badRequest(
+              "Start date must be less than end date!"
+            );
+          }
+          query.date = {
+            $gte: startDate,
+            $lte: endDate,
+          };
+        }
+        //Retrieve the exercises of the user
+        const exercises = await Exercise.find(query);
+        return {
+          message: "Exercises retrieved!",
+          result: exercises,
+        };
+      } catch (error) {
+        console.error("Error in get exercises dates: ", error);
+        throw customError.internalServerError(
+          error.message || "Internal Server Error"
+        );
+      }
+    },
 
     getUserExerciseCategory: async (_, { id }) => {
       try {

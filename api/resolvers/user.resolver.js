@@ -13,6 +13,66 @@ import customError from "../utils/customErrors.js";
 import normalizeUsername from "../utils/normalizeUsername.js";
 import mongoose from "mongoose";
 
+import { PubSub } from "graphql-subscriptions";
+import { CronJob } from "cron";
+import Water from "../models/water.model.js";
+
+const pubsub = new PubSub();
+const HYDRATION_REMINDER = "HYDRATION_REMINDER";
+
+const checkHydrationLevels = async () => {
+  try {
+    const users = await User.find();
+
+    const now = new Date();
+    const currentHour = now.getHours();
+
+    for (const user of users) {
+      const { _id, age, weight, gender, activity } = user;
+
+      if (currentHour < 8 || currentHour > 22) return;
+
+      const expectedWaterIntake = waterIntake({
+        weight,
+        age,
+        activity,
+        gender,
+      });
+
+      const hoursElapsed = currentHour - 8;
+      const totalActiveHours = 14;
+
+      const expectedWaterSoFar =
+        (expectedWaterIntake / totalActiveHours) * hoursElapsed;
+
+      const date = now.toISOString().split("T")[0];
+      const waterEntry = await Water.findOne({ date, userId: _id });
+      const waterConsumed = waterEntry ? waterEntry.quantity * 0.25 : 0;
+
+      /* console.log(
+        `User: ${_id}, Consumed: ${waterConsumed}ml, Expected: ${expectedWaterSoFar}ml`
+      ); */
+
+      if (waterConsumed < expectedWaterSoFar) {
+        pubsub.publish(HYDRATION_REMINDER, {
+          hydrationReminder: {
+            userId: _id,
+            message: `You should have consumed ${expectedWaterSoFar.toFixed(
+              2
+            )}ml of water by now`,
+          },
+        });
+      }
+    }
+  } catch (error) {
+    console.error("Error verifying hydration:", error);
+  }
+};
+
+// Config the cron job to run every 2 hours from 08:00 to 22:00
+const waterJob = new CronJob("0 8-22/2 * * *", checkHydrationLevels);
+waterJob.start();
+
 const userResolver = {
   Mutation: {
     signUp: async (_, { input }) => {
@@ -480,6 +540,11 @@ const userResolver = {
           error.message || "Internal Server Error"
         );
       }
+    },
+  },
+  Subscription: {
+    hydrationReminder: {
+      subscribe: () => pubsub.asyncIterableIterator(HYDRATION_REMINDER),
     },
   },
 };

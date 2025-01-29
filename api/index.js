@@ -12,6 +12,10 @@ import { expressMiddleware } from "@apollo/server/express4";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import { buildContext } from "graphql-passport";
 
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import { WebSocketServer } from "ws";
+import { useServer } from "graphql-ws/use/ws";
+
 import { connectDB } from "./config/db.config.js";
 import { configurePassport } from "./config/passport.config.js";
 
@@ -25,6 +29,11 @@ configurePassport();
 const app = express();
 // Create an HTTP server
 const httpServer = http.createServer(app);
+
+const schema = makeExecutableSchema({
+  typeDefs: mergedTypeDefs,
+  resolvers: mergedResolvers,
+});
 
 // Configure MongoDB session store
 const MongoDBStore = connectMongo(session);
@@ -54,10 +63,13 @@ app.use(passport.session());
 
 // Initialize Apollo Server
 const server = new ApolloServer({
-  typeDefs: mergedTypeDefs,
-  resolvers: mergedResolvers,
+  schema,
   plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
 });
+
+// Configure WebSocket server
+const wsServer = new WebSocketServer({ server: httpServer, path: "/graphql" });
+useServer({ schema }, wsServer);
 
 // Start the Apollo Server
 await server.start();

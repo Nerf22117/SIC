@@ -4,7 +4,7 @@ import { Line } from "react-chartjs-2";
 import { GET_EXERCISES_DATES } from "../../graphql/queries/exercise.query";
 import { useAuth } from "../../context/AuthContext";
 
-const GraphExercise = () => {
+const GraphExercise = ({ refetchTrigger }) => {
   const { authUser } = useAuth();
   const userId = authUser?._id;
 
@@ -22,19 +22,20 @@ const GraphExercise = () => {
   const startDate = lastWeekDates[0];
   const endDate = lastWeekDates[lastWeekDates.length - 1];
 
-  const { data, loading, error } = useQuery(GET_EXERCISES_DATES, {
+  const { data, loading, error, refetch } = useQuery(GET_EXERCISES_DATES, {
     variables: { input: { startDate, endDate, userId } },
   });
 
   useEffect(() => {
-    if (data) {
-      console.log(data);
+    if (refetchTrigger) {
+      refetch();
     }
-  }, [data]);
+  }, [refetchTrigger, refetch]);
 
   const exerciseWeekData = lastWeekDates.map((date) => {
-    const dayData = data?.getExercisesDates?.result?.find((exercise) => exercise.date === date);
-    return dayData ? dayData.duration : 0;
+    const dayData = data?.getExercisesDates?.result?.filter((exercise) => exercise.date === date);
+    const totalDuration = dayData ? dayData.reduce((sum, entry) => sum + entry.duration, 0) : 0;
+    return totalDuration;
   });
 
   const chartData = {

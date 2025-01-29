@@ -74,7 +74,7 @@ const exerciseResolver = {
   Query: {
     getUserExercises: async (
       _,
-      { input, limit = 10, offset = 0, order = "", search = "" }
+      { input, limit = 10, offset = 0, order = "", search = "", category = "" }
     ) => {
       try {
         //Destructure the input
@@ -124,6 +124,12 @@ const exerciseResolver = {
           exercises = sortExercises(exercises, order);
         }
 
+        if (category) {
+          exercises = exercises.filter(
+            (exercise) => exercise.muscularGroup === category
+          );
+        }
+
         return {
           message: "Exercises retrieved!",
           result: exercises,
@@ -166,7 +172,7 @@ const exerciseResolver = {
 
         return {
           message: "Exercises calories retrieved!",
-          result: totalCalories,
+          result: totalCalories.toFixed(2),
         };
       } catch (error) {
         console.error("Error in get daily calories: ", error);

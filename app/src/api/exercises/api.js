@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3001/exercises";
+const API_URL = "https://db-exercise.vercel.app/exercises";
 
 export const getExercises = async () => {
   const response = await fetch(API_URL);

@@ -12,7 +12,6 @@ const foodTypeDef = `#graphql
 
     type Query {
         getUserFoods(input: GetFoodsInput!, limit:Int, offset:Int, order:OrderEnum, search:String): ResponseFoods
-        getUserFood(input: GetFoodInput!): ResponseFood
         getDailyCalories(id:ID!): ResponseCalories
         getCaloriesDate(input: GetFoodsInput!): ResponseCaloriesArray
     }

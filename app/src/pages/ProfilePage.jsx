@@ -90,10 +90,12 @@ export default function ProfilePage() {
   if (error) return <p>Error: {error.message}</p>;
 
   return (
-    <div className="p-4 max-w-lg mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Update your information</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
+    <div className="p-6 max-w-xl mx-auto bg-white shadow-lg rounded-lg border border-gray-200">
+      <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">
+        Update your information
+      </h1>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
           <InputField
             label="Username"
             id="username"
@@ -103,7 +105,7 @@ export default function ProfilePage() {
             onChange={handleChange}
           />
         </div>
-        <div className="mb-4">
+        <div>
           <InputField
             label="Name"
             id="name"
@@ -113,7 +115,7 @@ export default function ProfilePage() {
             onChange={handleChange}
           />
         </div>
-        <div className="mb-4">
+        <div>
           <InputField
             label="Password"
             id="password"
@@ -124,7 +126,7 @@ export default function ProfilePage() {
             onChange={handleChange}
           />
         </div>
-        <div className="mb-4">
+        <div>
           <InputField
             label="Email"
             id="email"
@@ -134,7 +136,7 @@ export default function ProfilePage() {
             onChange={handleChange}
           />
         </div>
-        <div className="mb-4">
+        <div>
           <SelectField
             label="Gender"
             id="gender"
@@ -147,7 +149,7 @@ export default function ProfilePage() {
             ]}
           />
         </div>
-        <div className="mb-4">
+        <div>
           <InputField
             label="Age"
             id="age"
@@ -157,7 +159,7 @@ export default function ProfilePage() {
             onChange={handleChange}
           />
         </div>
-        <div className="mb-4">
+        <div>
           <InputField
             label="Weight (kg)"
             id="weight"
@@ -167,7 +169,7 @@ export default function ProfilePage() {
             onChange={handleChange}
           />
         </div>
-        <div className="mb-4">
+        <div>
           <InputField
             label="Height (cm)"
             id="height"
@@ -177,7 +179,7 @@ export default function ProfilePage() {
             onChange={handleChange}
           />
         </div>
-        <div className="mb-4">
+        <div>
           <SelectField
             label="Activity Level"
             id="activity"
@@ -198,7 +200,7 @@ export default function ProfilePage() {
         <button
           type="submit"
           disabled={!isDirty || updating}
-          className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50 hover:cursor-pointer"
+          className="w-full bg-gradient-to-r from-blue-500 to-blue-700 text-white font-medium px-4 py-2 rounded-lg hover:shadow-md transition disabled:opacity-50 cursor-pointer"
         >
           {updating ? "Saving..." : "Save changes"}
         </button>

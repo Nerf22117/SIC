@@ -1,4 +1,4 @@
-# ESMAD - Cloud Services and Interfaces - [Nutrition and Diet Website]- 2425 XXX
+# ESMAD - Cloud Services and Interfaces - [Nutrition and Diet Website]- 2425
 
 Repository made in the scope of the Cloud Services and Interfaces - 3rd year of the Degree in Technologies and Information Systems for the Web (TSIW)
 (ESMAD-P.PORTO)

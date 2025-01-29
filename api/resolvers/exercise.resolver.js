@@ -12,7 +12,15 @@ const exerciseResolver = {
     createExercise: async (_, { input }) => {
       try {
         //Destructure the input
-        const { userId, activity, calories, date, duration } = input;
+        const {
+          userId,
+          activity,
+          calories,
+          date,
+          duration,
+          muscularGroup,
+          gif,
+        } = input;
 
         //If user don't exist, retrieve an error
         if (!userId) {
@@ -45,6 +53,8 @@ const exerciseResolver = {
           userId,
           calories,
           activity,
+          muscularGroup,
+          gif,
         });
 
         //Save the new exercise
@@ -89,6 +99,12 @@ const exerciseResolver = {
         };
 
         if (startDate && endDate) {
+          if (startDate > endDate) {
+            throw customError.badRequest(
+              "Start date must be less than end date!"
+            );
+          }
+
           query.date = {
             $gte: startDate,
             $lte: endDate,

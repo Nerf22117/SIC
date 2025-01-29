@@ -5,6 +5,8 @@ const exerciseTypeDef = `#graphql
         calories:Int!
         date: String!
         duration: Int!
+        muscularGroup: String!
+        gif: String!
         userId:ID!
     }
 
@@ -35,6 +37,8 @@ const exerciseTypeDef = `#graphql
         calories:Int!
         date: String!
         duration: Int!
+        muscularGroup: String!
+        gif: String!
     }
 
     type ResponseMessage {

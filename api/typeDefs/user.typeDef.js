@@ -63,7 +63,6 @@ const userTypeDef = `#graphql
         activity: String
     }
     
-    # Review if the IMC type is necessary
     type IMC {
         value: Float!
         category: String!

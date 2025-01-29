@@ -177,6 +177,11 @@ const waterResolver = {
         };
 
         if (startDate && endDate) {
+          if (startDate > endDate) {
+            throw customError.badRequest(
+              "Start date must be less than end date!"
+            );
+          }
           query.date = {
             $gte: startDate,
             $lte: endDate,

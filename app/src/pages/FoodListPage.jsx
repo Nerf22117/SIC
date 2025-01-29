@@ -70,6 +70,8 @@ export default function FoodListPage() {
             calories: selectedFood.calories,
             date: new Date().toISOString().split("T")[0],
             quantity: quantity,
+            image: selectedFood.image,
+            foodId: selectedFood.id,
           },
         },
       });
@@ -134,7 +136,7 @@ export default function FoodListPage() {
             {sortedFoods.length > 0 ? (
               sortedFoods.map((food) => (
                 <div key={food.id} className="border border-gray-300 rounded-lg p-4 hover:bg-gray-100">
-                  <Link to={`/food/${food.id}`}>
+                  <Link to={`/food/${food.foodId}`}>
                     <img
                       src={food.image}
                       alt={food.name}

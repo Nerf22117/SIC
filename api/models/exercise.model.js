@@ -20,6 +20,14 @@ const exerciseSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    muscularGroup: {
+      type: String,
+      required: true,
+    },
+    gif: {
+      type: String,
+      required: true,
+    },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

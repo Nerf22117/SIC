@@ -35,6 +35,8 @@ export default function FoodListPage() {
         },
     });
 
+    console.log("dataUserExercise", dataUserExercise);
+
     useEffect(() => {
         refetchUserFood();
     }, [searchFood, orderFood, refetchUserFood]);
@@ -78,7 +80,7 @@ export default function FoodListPage() {
                         {dataUserFood?.getUserFoods?.result?.length > 0 ? (
                             dataUserFood.getUserFoods.result.map((food) => (
                                 <div key={food._id} className="border border-gray-300 rounded-lg p-4 hover:bg-gray-100">
-                                    <Link to={`/food/${food._id}`}>
+                                    <Link to={`/food/${food.foodId}`}>
                                         <img
                                             src={food.image}
                                             alt={food.name}
@@ -126,14 +128,14 @@ export default function FoodListPage() {
                             dataUserExercise.getUserExercises.result.map((exercise) => (
                                 <div key={exercise._id} className="border border-gray-300 rounded-lg p-4 hover:bg-gray-100">
                                     <img
-                                        src={exercise.image}
+                                        src={exercise.gif}
                                         alt={exercise.activity}
                                         className="w-full h-32 object-cover rounded-lg mb-4"
                                     />
                                     <h2 className="text-xl font-bold">{exercise.activity}</h2>
                                     <p className="text-gray-500">{exercise.duration} minutes</p>
                                     <p className="text-gray-500">{exercise.calories} calories</p>
-                                    <p className="text-gray-500">Quantity: {exercise.quantity}</p>
+                                    <p className="text-gray-500">Muscular Group: {exercise.muscularGroup}</p>
                                 </div>
                             ))
                         ) : (

@@ -7,6 +7,7 @@ export const GET_USER_EXERCISES = gql`
     $offset: Int
     $order: OrderEnum
     $search: String
+    $category: String
   ) {
     getUserExercises(
       input: $input
@@ -14,6 +15,7 @@ export const GET_USER_EXERCISES = gql`
       offset: $offset
       order: $order
       search: $search
+      category: $category
     ) {
       message
       result {
@@ -25,6 +27,15 @@ export const GET_USER_EXERCISES = gql`
         muscularGroup
         gif
       }
+    }
+  }
+`;
+
+export const GET_EXERCISE_USER_CATEGORIES = gql`
+  query GetUserExerciseCategory($getUserExerciseCategoryId: ID!) {
+    getUserExerciseCategory(id: $getUserExerciseCategoryId) {
+      message
+      result
     }
   }
 `;

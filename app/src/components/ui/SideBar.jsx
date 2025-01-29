@@ -55,7 +55,7 @@ const SideBar = () => {
             </Link>
           </li>
         </ul>
-        <div className="mt-130">
+        <div className="mt-89">
           <ul>
             <li className="mb-10">
               <Link

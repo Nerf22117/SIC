@@ -40,7 +40,7 @@ export default function ActivityPage() {
         },
     });
 
-    const { data: dataMuscularGroups } = useQuery(GET_EXERCISE_USER_CATEGORIES, {
+    const { data: dataMuscularGroups, refetch: refetchMuscularGroups } = useQuery(GET_EXERCISE_USER_CATEGORIES, {
         variables: { getUserExerciseCategoryId: authUser?._id },
     });
 
@@ -51,6 +51,10 @@ export default function ActivityPage() {
     useEffect(() => {
         refetchUserExercise();
     }, [searchExercise, orderExercise, exercisePage, muscularGroup, refetchUserExercise]);
+
+    useEffect(() => {
+        refetchMuscularGroups();
+    }, [dataUserExercise]);
 
     if (loadingUserFood || loadingUserExercise) return <p>Loading...</p>;
     if (errorUserFood || errorUserExercise) return toast.error("An error occurred. Please try again.");

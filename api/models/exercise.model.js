@@ -5,7 +5,6 @@ const exerciseSchema = new mongoose.Schema(
     activity: {
       type: String,
       required: true,
-      unique: true,
     },
     duration: {
       type: Number,

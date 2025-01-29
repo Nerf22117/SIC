@@ -43,7 +43,7 @@ export default function VerifyAccountPage() {
     const verificationCode = code.join("");
 
     try {
-      const response = await verifyaccount({
+      await verifyaccount({
         variables: {
           email,
           verificationCode,

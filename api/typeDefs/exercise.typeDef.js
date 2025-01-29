@@ -14,7 +14,7 @@ const exerciseTypeDef = `#graphql
         getUserExercises(input: GetExercisesInput!, limit:Int, offset:Int, order:OrderEnum, search:String, category:String ): ResponseExercises
         getDailyExerciseCalories(id:ID!): ResponseCalories2
         getExercisesDates(input:GetExercisesInput!): ResponseExercises
-
+        getUserExerciseCategory(id:ID!): ResponseCategories
     }
 
     type Mutation {
@@ -59,6 +59,11 @@ const exerciseTypeDef = `#graphql
     type ResponseCalories2 {
         message: String!
         result: Float!
+    }
+
+    type ResponseCategories {
+        message: String!
+        result: [String]
     }
 
     enum OrderEnum {

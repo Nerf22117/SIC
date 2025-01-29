@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useQuery } from "@apollo/client";
 import { GET_USER_FOODS } from "../graphql/queries/food.query";
-import { GET_USER_EXERCISES } from "../graphql/queries/exercise.query.js";
+import { GET_USER_EXERCISES, GET_EXERCISE_USER_CATEGORIES } from "../graphql/queries/exercise.query.js";
 import { toast } from "react-hot-toast";
 
 export default function FoodListPage() {
@@ -12,6 +12,8 @@ export default function FoodListPage() {
 
     const [searchExercise, setSearchExercise] = useState("");
     const [orderExercise, setOrderExercise] = useState("");
+
+    const [muscularGroup, setMuscularGroup] = useState("");
 
     const { authUser } = useAuth();
 
@@ -32,10 +34,13 @@ export default function FoodListPage() {
             order: orderExercise || null,
             limit: 10,
             offset: 0,
+            category: muscularGroup === "All" ? "" : muscularGroup,
         },
     });
 
-    console.log("dataUserExercise", dataUserExercise);
+    const { data: dataMuscularGroups } = useQuery(GET_EXERCISE_USER_CATEGORIES, {
+        variables: { getUserExerciseCategoryId: authUser?._id },
+    });
 
     useEffect(() => {
         refetchUserFood();
@@ -43,7 +48,7 @@ export default function FoodListPage() {
 
     useEffect(() => {
         refetchUserExercise();
-    }, [searchExercise, orderExercise, refetchUserExercise]);
+    }, [searchExercise, orderExercise, dataUserExercise, refetchUserExercise, muscularGroup]);
 
     if (loadingUserFood || loadingUserExercise) return <p>Loading...</p>;
     if (errorUserFood || errorUserExercise) return toast.error("An error occurred. Please try again.");
@@ -109,6 +114,18 @@ export default function FoodListPage() {
                         value={searchExercise}
                         onChange={(e) => setSearchExercise(e.target.value)}
                     />
+                    <select
+                        className="border border-gray-300 p-2 w-full md:w-1/6 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4 md:mb-0"
+                        value={muscularGroup}
+                        onChange={(e) => setMuscularGroup(e.target.value)}
+                    >
+                        <option value="" selected>All</option>
+                        {dataMuscularGroups?.getUserExerciseCategory?.result?.map((group) => (
+                            <option key={group} value={group}>
+                                {group}
+                            </option>
+                        ))}
+                    </select>
                     <select
                         className="border border-gray-300 p-2 w-full md:w-1/6 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         value={orderExercise}

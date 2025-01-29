@@ -39,9 +39,9 @@ ChartJS.register(
 export default function HomePage() {
   const { authUser } = useAuth();
 
-  const [createWater, { loading: loadingWater, error }] =
+  const [createWater, { loading: loadingWater }] =
     useMutation(CREATE_WATER);
-  const [removeWater, { loading: loadingRemoveWater, errorRemoveWater }] =
+  const [removeWater] =
     useMutation(REMOVE_WATER);
 
   useSubscription(HYDRATION_REMINDER, {

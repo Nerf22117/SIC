@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { get } from "mongoose";
 
 import User from "../models/user.model.js";
 import Exercise from "../models/exercise.model.js";
@@ -183,7 +183,7 @@ const exerciseResolver = {
     },
     getExercisesDates: async (_, { input }) => {
       try {
-          //Destructure the input
+        //Destructure the input
         const { startDate, endDate, userId } = input;
 
         //Check if the userId is a valid ObjectId
@@ -220,17 +220,51 @@ const exerciseResolver = {
         return {
           message: "Exercises retrieved!",
           result: exercises,
-        }
-      }
-      catch (error) {
+        };
+      } catch (error) {
         console.error("Error in get exercises dates: ", error);
         throw customError.internalServerError(
           error.message || "Internal Server Error"
         );
       }
-    }
-    
+    },
 
+    getUserExerciseCategory: async (_, { id }) => {
+      try {
+        //Check if the userId is a valid ObjectId
+        if (!mongoose.isValidObjectId(id)) {
+          throw customError.badRequest("Invalid user id!");
+        }
+
+        const objectIdUserId = new mongoose.Types.ObjectId(id);
+
+        //Check if the user exists
+        const user = await User.findById(objectIdUserId);
+
+        if (!user) {
+          throw customError.notFound("User not found!");
+        }
+
+        //Retrieve the exercises of the user
+        const exercises = await Exercise.find({
+          userId: objectIdUserId,
+        });
+
+        const categories = exercises.map((exercise) => exercise.muscularGroup);
+
+        const uniqueCategories = [...new Set(categories)];
+
+        return {
+          message: "Categories retrieved!",
+          result: uniqueCategories,
+        };
+      } catch (error) {
+        console.error("Error in get user categories: ", error);
+        throw customError.internalServerError(
+          error.message || "Internal Server Error"
+        );
+      }
+    },
   },
 };
 

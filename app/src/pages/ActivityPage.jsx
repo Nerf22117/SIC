@@ -6,7 +6,7 @@ import { GET_USER_FOODS } from "../graphql/queries/food.query";
 
 export default function FoodListPage() {
     const [searchTerm, setSearchTerm] = useState("");
-    const [order, setOrder] = useState(""); // Estado para o filtro de ordenação
+    const [order, setOrder] = useState("");
     const { authUser } = useAuth();
 
     const { data: dataUserFood, loading: loadingUserFood, error: errorUserFood, refetch: refetchUserFood } = useQuery(GET_USER_FOODS, {
@@ -14,13 +14,13 @@ export default function FoodListPage() {
             input: { userId: authUser?._id },
             search: searchTerm || null,
             order: order || null,
-            limit: 10, // Defina um limite se necessário
-            offset: 0, // Pode ser atualizado para paginação
+            limit: 10,
+            offset: 0,
         },
     });
 
     useEffect(() => {
-        refetchUserFood(); // Refaz a busca sempre que searchTerm ou order mudam
+        refetchUserFood();
     }, [searchTerm, order, refetchUserFood]);
 
     if (loadingUserFood) return <p>Loading...</p>;

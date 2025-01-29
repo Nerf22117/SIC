@@ -67,9 +67,12 @@ export default function ActivityPage() {
     },
   });
 
-  const { data: dataMuscularGroups } = useQuery(GET_EXERCISE_USER_CATEGORIES, {
-    variables: { getUserExerciseCategoryId: authUser?._id },
-  });
+  const { data: dataMuscularGroups, refetch: refetchMuscularGroups } = useQuery(
+    GET_EXERCISE_USER_CATEGORIES,
+    {
+      variables: { getUserExerciseCategoryId: authUser?._id },
+    }
+  );
 
   useEffect(() => {
     refetchUserFood();
@@ -84,6 +87,10 @@ export default function ActivityPage() {
     muscularGroup,
     refetchUserExercise,
   ]);
+
+  useEffect(() => {
+    refetchMuscularGroups();
+  }, [dataUserExercise]);
 
   if (loadingUserFood || loadingUserExercise) return <p>Loading...</p>;
   if (errorUserFood || errorUserExercise)

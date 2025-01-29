@@ -4,7 +4,7 @@ import { Line } from "react-chartjs-2";
 import { GET_WATER_DATES } from "../../graphql/queries/water.query";
 import { useAuth } from "../../context/AuthContext";
 
-const GraphWater = () => {
+const GraphWater = ({ refetchTrigger }) => {
   const { authUser } = useAuth();
   const userId = authUser?._id;
 
@@ -22,15 +22,15 @@ const GraphWater = () => {
   const startDate = lastWeekDates[0];
   const endDate = lastWeekDates[lastWeekDates.length - 1];
 
-  const { data, loading, error } = useQuery(GET_WATER_DATES, {
+  const { data, loading, error, refetch } = useQuery(GET_WATER_DATES, {
     variables: { input: { startDate, endDate, userId } },
   });
 
   useEffect(() => {
-    if (data) {
-      console.log(data);
+    if (refetchTrigger) {
+      refetch();
     }
-  }, [data]);
+  }, [refetchTrigger, refetch]);
 
   const waterWeekData = lastWeekDates.map((date) => {
     const dayData = data?.getUserWaters?.result?.find((day) => day.date === date);

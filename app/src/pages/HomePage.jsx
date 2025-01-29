@@ -39,10 +39,8 @@ ChartJS.register(
 export default function HomePage() {
   const { authUser } = useAuth();
 
-  const [createWater, { loading: loadingWater }] =
-    useMutation(CREATE_WATER);
-  const [removeWater] =
-    useMutation(REMOVE_WATER);
+  const [createWater, { loading: loadingWater }] = useMutation(CREATE_WATER);
+  const [removeWater] = useMutation(REMOVE_WATER);
 
   useSubscription(HYDRATION_REMINDER, {
     onSubscriptionData: ({ subscriptionData }) => {
@@ -70,11 +68,13 @@ export default function HomePage() {
 
       const message = response.data.createWater.message;
       toast.success(message);
+      refetchWaterIntake();
     } catch (error) {
       console.log(error);
       toast.error(error.message);
     }
   };
+
   const handleRemoveWater = async () => {
     try {
       const response = await removeWater({
@@ -89,6 +89,7 @@ export default function HomePage() {
 
       const message = response.data.removeWater.message;
       toast.success(message);
+      refetchWaterIntake();
     } catch (error) {
       console.log(error);
       toast.error(error.message);
@@ -106,6 +107,7 @@ export default function HomePage() {
   } = useQuery(GET_WATER_INTAKE, {
     variables: { date, userId },
   });
+
   const {
     data: dataWaterObjective,
     loading: loadingGetWaterObjective,
@@ -187,6 +189,10 @@ export default function HomePage() {
     refetchWaterIntake();
   };
 
+  useEffect(() => {
+    refetchWaterIntake();
+  }, [handleAddWater, handleRemoveWater]);
+
   if (loadingGetWater || loadingGetWaterObjective) return <p>Loading...</p>;
   if (errorGetWater || errorGetWaterObjective)
     return (
@@ -209,9 +215,9 @@ export default function HomePage() {
           <div className="bg-white shadow-md rounded-lg p-6 ">
             <h2 className="text-xl font-bold">Notifications</h2>
           </div>
-          <GraphWater />
-          <GraphFood />
-          <GraphExercise />
+          <GraphWater refetchTrigger={handleAddWater} />
+          <GraphFood refetchTrigger={handleAddWater} />
+          <GraphExercise refetchTrigger={handleAddWater} />
           <div className="bg-white shadow-md rounded-lg p-6 col-span-3">
             <h3 className="text-xl font-bold">Daily Water</h3>
             <div className="flex space-x-2 mt-4">

@@ -50,22 +50,34 @@ const SideBar = () => {
             </Link>
           </li>
         </ul>
-        <ul>
-          <li className="mt-123">
-            {!loading && (
-              <div
-                className="bg-red-900 block py-2.5 px-4 transition duration-200 hover:bg-gray-700"
-                onClick={handleLogout}
-                style={{ cursor: "pointer" }}
+        <div className="mt-130">
+          <ul>
+            <li className="mb-10">
+              <Link
+                to="/profile"
+                className="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700"
               >
-                Logout
-              </div>
-            )}
-            {loading && (
-              <div className="w-6 h-6 border-t-2 border-b-2 mx-2 rounded-full animate-spin"></div>
-            )}
-          </li>
-        </ul>
+                Profile
+              </Link>
+            </li>
+          </ul>
+          <ul>
+            <li>
+              {!loading && (
+                <div
+                  className="bg-red-900 block py-2.5 px-4 transition duration-200 hover:bg-gray-700"
+                  onClick={handleLogout}
+                  style={{ cursor: "pointer" }}
+                >
+                  Logout
+                </div>
+              )}
+              {loading && (
+                <div className="w-6 h-6 border-t-2 border-b-2 mx-2 rounded-full animate-spin"></div>
+              )}
+            </li>
+          </ul>
+        </div>
       </nav>
     </div>
   );

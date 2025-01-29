@@ -6,7 +6,12 @@ export const GET_AUTHENTICATED_USER = gql`
       _id
       username
       name
+      email
+      gender
+      age
       weight
+      height
+      activity
       profilePicture
     }
   }

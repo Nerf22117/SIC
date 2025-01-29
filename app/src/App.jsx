@@ -10,6 +10,7 @@ import ResetPasswordPage from "./pages/ResetPasswordPage";
 import FoodListPage from "./pages/FoodListPage";
 import FoodDetailsPage from "./pages/FoodDetailsPage";
 import ExercisesPage from "./pages/ExercisesPage";
+import ProfilePage from "./pages/ProfilePage";
 import { useQuery } from "@apollo/client";
 import { GET_AUTHENTICATED_USER } from "./graphql/queries/user.query";
 import { Toaster } from "react-hot-toast";
@@ -25,10 +26,10 @@ const routes = [
   { path: "/forgotpassword", element: <ForgotPasswordPage /> },
   { path: "/verifypasswordreset", element: <VerifyPasswordResetPage /> },
   { path: "/resetpassword", element: <ResetPasswordPage /> },
-
   { path: "/foodlist", element: <FoodListPage />, showSideBar: true },
   { path: "/food/:id", element: <FoodDetailsPage />, showSideBar: true },
   { path: "/exercises", element: <ExercisesPage />, showSideBar: true },
+  { path: "/profile", element: <ProfilePage />, showSideBar: true },
 ];
 
 function App() {
@@ -48,7 +49,13 @@ function App() {
   const renderRoute = (route) => {
     const isAuthenticated = !!data?.authUser;
 
-    const protectedRoutes = ["/", "/exercises", "/foodlist", "/food/:id"];
+    const protectedRoutes = [
+      "/",
+      "/exercises",
+      "/foodlist",
+      "/food/:id",
+      "/profile",
+    ];
 
     if (protectedRoutes.includes(route.path) && !isAuthenticated) {
       return <Navigate to="/signin" replace />;

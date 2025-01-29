@@ -31,6 +31,7 @@ const userTypeDef = `#graphql
         validateResetPasswordCode(email: String!, resetPasswordCode: String!): ResponseMessage
         resetPassword(email: String!, newPassword: String!, confirmNewPassword: String!): ResponseMessage
         resendResetPasswordCode(email: String!): ResponseMessage
+        updateUser(id: ID!, input: UpdateUserInput!): ResponseMessage
     }
 
     input SignUpInput {
@@ -48,6 +49,18 @@ const userTypeDef = `#graphql
     input SignInInput {
         email: String!
         password: String!
+    }
+
+    input UpdateUserInput {
+        username: String
+        name: String
+        email: String
+        password: String
+        gender: String
+        age: Int
+        weight: Float
+        height: Float
+        activity: String
     }
     
     # Review if the IMC type is necessary

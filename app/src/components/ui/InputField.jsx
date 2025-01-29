@@ -5,6 +5,7 @@ export default function InputField({
   type = "text",
   onChange,
   value,
+  placeholder,
 }) {
   return (
     <div>
@@ -18,6 +19,7 @@ export default function InputField({
         name={name}
         value={value}
         onChange={onChange}
+        placeholder={placeholder}
       />
     </div>
   );

@@ -11,6 +11,7 @@ import basalMetabolism from "../utils/basalMetabolism.js";
 import imc from "../utils/imc.js";
 import customError from "../utils/customErrors.js";
 import normalizeUsername from "../utils/normalizeUsername.js";
+import mongoose from "mongoose";
 
 const userResolver = {
   Mutation: {
@@ -334,6 +335,99 @@ const userResolver = {
         return { message: "Reset password code sent to your email" };
       } catch (error) {
         console.error("Error in resendResetPasswordCode: ", error);
+        throw customError.internalServerError(
+          error.message || "Internal Server Error"
+        );
+      }
+    },
+    updateUser: async (_, { id, input }) => {
+      try {
+        const {
+          username,
+          name,
+          email,
+          password,
+          gender,
+          age,
+          weight,
+          height,
+          activity,
+        } = input;
+
+        // Validate user ID
+        if (!mongoose.isValidObjectId(id)) {
+          throw customError.badRequest("Invalid user ID!");
+        }
+
+        // Find the user
+        const user = await User.findById(id);
+        if (!user) {
+          throw customError.notFound("User not found!");
+        }
+
+        // Validation for unique username
+        if (username) {
+          const alreadyExistingUser = await User.findOne({ username });
+          if (
+            alreadyExistingUser &&
+            alreadyExistingUser._id.toString() !== id
+          ) {
+            throw customError.conflict("Username already exists!");
+          }
+        }
+
+        // Validation for unique email
+        if (email) {
+          const alreadyExistingEmail = await User.findOne({ email });
+          if (
+            alreadyExistingEmail &&
+            alreadyExistingEmail._id.toString() !== id
+          ) {
+            throw customError.conflict("Email already exists!");
+          }
+        }
+
+        // Update profile picture if username or gender changes
+        let profilePicture = user.profilePicture;
+        if (username || gender) {
+          const normalizedUsername = normalizeUsername(
+            username || user.username
+          );
+          const updatedGender = gender || user.gender;
+          const genderKey = updatedGender === "male" ? "boy" : "girl";
+          profilePicture = `https://avatar.iran.liara.run/public/${genderKey}?username=${normalizedUsername}`;
+        }
+
+        // Hash password if provided
+        let hashedPassword = user.password;
+        if (password) {
+          hashedPassword = await hashValue(password);
+        }
+
+        // Build the update object dynamically
+        const updateFields = {
+          ...(username && { username }),
+          ...(name && { name }),
+          ...(email && { email }),
+          ...(password && { password: hashedPassword }),
+          ...(gender && { gender }),
+          ...(profilePicture && { profilePicture }),
+          ...(age && { age }),
+          ...(weight && { weight }),
+          ...(height && { height }),
+          ...(activity && { activity }),
+        };
+
+        // Update the user
+        const updatedUser = await User.findByIdAndUpdate(id, updateFields, {
+          new: true,
+        });
+
+        return {
+          message: "User updated successfully!",
+        };
+      } catch (error) {
+        console.error("Error in updateUser:", error);
         throw customError.internalServerError(
           error.message || "Internal Server Error"
         );

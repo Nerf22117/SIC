@@ -136,3 +136,17 @@ export const RESET_PASSWORD = gql`
     }
   }
 `;
+
+/**
+ * Update the user's profile
+ * @param {ID} id - ID of the user
+ * @param {UpdateUserInput} input - Input object containing user details to update
+ * @returns {ResponseMessage} - Message indicating success or failure
+ * */
+export const UPDATE_USER = gql`
+  mutation UpdateUser($id: ID!, $input: UpdateUserInput!) {
+    updateUser(id: $id, input: $input) {
+      message
+    }
+  }
+`;

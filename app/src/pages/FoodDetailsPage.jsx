@@ -34,7 +34,7 @@ export default function FoodDetailsPage() {
     const fetchFoodDetails = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3002/foodItems/${id}`
+          `https://db-food-eight.vercel.app/foods/${id}`
         );
         setFood(response.data);
 

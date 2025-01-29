@@ -6,8 +6,6 @@ import { CREATE_FOOD } from "../graphql/mutations/food.mutation";
 import { useMutation, useQuery } from "@apollo/client";
 import { useAuth } from "../context/AuthContext";
 
-
-
 export default function FoodListPage() {
   const [foods, setFoods] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -21,7 +19,9 @@ export default function FoodListPage() {
   useEffect(() => {
     const fetchFoods = async () => {
       try {
-        const response = await axios.get("http://localhost:3002/foodItems");
+        const response = await axios.get(
+          "https://db-food-eight.vercel.app/foods"
+        );
         setFoods(response.data);
         const uniqueCategories = [
           "All",
@@ -58,7 +58,8 @@ export default function FoodListPage() {
   });
 
   const { authUser } = useAuth();
-  const [createFood, { loading: loadingFood, error }] = useMutation(CREATE_FOOD);
+  const [createFood, { loading: loadingFood, error }] =
+    useMutation(CREATE_FOOD);
 
   const handleAddFood = async () => {
     try {
@@ -135,7 +136,10 @@ export default function FoodListPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
             {sortedFoods.length > 0 ? (
               sortedFoods.map((food) => (
-                <div key={food.id} className="border border-gray-300 rounded-lg p-4 hover:bg-gray-100">
+                <div
+                  key={food.id}
+                  className="border border-gray-300 rounded-lg p-4 hover:bg-gray-100"
+                >
                   <Link to={`/food/${food.foodId}`}>
                     <img
                       src={food.image}
@@ -162,9 +166,14 @@ export default function FoodListPage() {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+        <div
+          className="fixed inset-0 flex items-center justify-center"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+        >
           <div className="bg-white p-6 rounded-lg ">
-            <h2 className="text-xl font-bold mb-4 flex justify-center">{selectedFood.name}</h2>
+            <h2 className="text-xl font-bold mb-4 flex justify-center">
+              {selectedFood.name}
+            </h2>
             <div className="flex items-center mb-4 justify-center">
               <button
                 className="bg-gray-300 text-gray-700 py-1 px-3 rounded-l cursor-pointer"

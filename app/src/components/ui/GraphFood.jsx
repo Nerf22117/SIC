@@ -4,7 +4,7 @@ import { Line } from "react-chartjs-2";
 import { GET_CALORIES_DATES } from "../../graphql/queries/food.query";
 import { useAuth } from "../../context/AuthContext";
 
-const GraphFood = () => {
+const GraphFood = ({ refetchTrigger }) => {
   const { authUser } = useAuth();
   const userId = authUser?._id;
 
@@ -22,19 +22,20 @@ const GraphFood = () => {
   const startDate = lastWeekDates[0];
   const endDate = lastWeekDates[lastWeekDates.length - 1];
 
-  const { data, loading, error } = useQuery(GET_CALORIES_DATES, {
+  const { data, loading, error, refetch } = useQuery(GET_CALORIES_DATES, {
     variables: { input: { startDate, endDate, userId } },
   });
 
   useEffect(() => {
-    if (data) {
-      console.log(data);
+    if (refetchTrigger) {
+      refetch();
     }
-  }, [data]);
+  }, [refetchTrigger, refetch]);
 
   const caloriesWeekData = lastWeekDates.map((date) => {
-    const dayData = data?.getCaloriesDate?.result?.find((day) => day.date === date);
-    return dayData ? dayData.calories : 0;
+    const dayData = data?.getCaloriesDate?.result?.filter((day) => day.date === date);
+    const totalCalories = dayData ? dayData.reduce((sum, entry) => sum + entry.calories, 0) : 0;
+    return totalCalories;
   });
 
   const chartData = {

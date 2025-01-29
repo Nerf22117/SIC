@@ -142,7 +142,9 @@ const foodResolver = {
         let foods = await Food.find(query).skip(offset).limit(limit);
 
         if (search) {
-          foods = foods.filter((food) => food.name.includes(search));
+          foods = foods.filter((food) =>
+            food.name.toLowerCase().includes(search.toLowerCase())
+          );
         }
 
         if (order) {

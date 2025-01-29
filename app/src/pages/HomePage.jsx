@@ -11,7 +11,7 @@ import {
 } from "../graphql/queries/water.query";
 import { HYDRATION_REMINDER } from "../graphql/subscriptions/user.subscriptions";
 import { useAuth } from "../context/AuthContext";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -38,9 +38,9 @@ ChartJS.register(
 export default function HomePage() {
   const { authUser } = useAuth();
 
-  const [createWater, { loading: loadingWater, error }] =
+  const [createWater, { loading: loadingWater }] =
     useMutation(CREATE_WATER);
-  const [removeWater, { loading: loadingRemoveWater, errorRemoveWater }] =
+  const [removeWater] =
     useMutation(REMOVE_WATER);
 
   useSubscription(HYDRATION_REMINDER, {

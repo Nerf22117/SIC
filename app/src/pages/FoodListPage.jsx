@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { CREATE_FOOD } from "../graphql/mutations/food.mutation";
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { useAuth } from "../context/AuthContext";
 
 export default function FoodListPage() {
@@ -58,7 +58,7 @@ export default function FoodListPage() {
   });
 
   const { authUser } = useAuth();
-  const [createFood, { loading: loadingFood, error }] =
+  const [createFood] =
     useMutation(CREATE_FOOD);
 
   const handleAddFood = async () => {

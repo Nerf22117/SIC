@@ -13,6 +13,7 @@ const foodTypeDef = `#graphql
     type Query {
         getUserFoods(input: GetFoodsInput!, limit:Int, offset:Int, order:OrderEnum, search:String): ResponseFoods
         getDailyCalories(id:ID!): ResponseCalories
+        getCaloriesDate(input: GetFoodsInput!): ResponseCaloriesArray
     }
 
     type Mutation {
@@ -58,6 +59,11 @@ const foodTypeDef = `#graphql
     type ResponseCalories {
         message: String!
         result: Int!
+    }
+
+    type ResponseCaloriesArray {
+        message: String!
+        result: [Food]
     }
 
     enum OrderEnum {

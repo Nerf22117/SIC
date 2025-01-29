@@ -28,3 +28,15 @@ export const GET_USER_EXERCISES = gql`
     }
   }
 `;
+
+export const GET_EXERCISES_DATES = gql`
+  query GetUserExercises($input: GetExercisesInput!) {
+    getExercisesDates(input: $input) {
+      message
+      result {
+        date
+        duration
+      }
+    }
+  }
+`;

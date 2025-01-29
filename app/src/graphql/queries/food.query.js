@@ -29,3 +29,15 @@ export const GET_USER_FOODS = gql`
     }
   }
 `;
+
+export const GET_CALORIES_DATES = gql`
+  query GetUserCaloriesDate($input: GetFoodsInput!) {
+    getCaloriesDate(input: $input) {
+      message
+      result{
+        date
+        calories
+      }
+    }
+  }
+`;

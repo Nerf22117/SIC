@@ -1,8 +1,8 @@
-import React from "react";
 import { Link } from "react-router-dom";
 
 import { useMutation } from "@apollo/client";
 import { LOGOUT } from "../../graphql/mutations/user.mutation";
+import { toast } from "react-hot-toast";
 
 const SideBar = () => {
   const [logout, { loading }] = useMutation(LOGOUT, {
@@ -47,6 +47,11 @@ const SideBar = () => {
               className="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700"
             >
               Exercise
+            </Link>
+          </li>
+          <li>
+            <Link to="/activity" className="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">
+              Activity
             </Link>
           </li>
         </ul>

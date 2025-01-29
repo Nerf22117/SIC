@@ -11,6 +11,7 @@ import FoodListPage from "./pages/FoodListPage";
 import FoodDetailsPage from "./pages/FoodDetailsPage";
 import ExercisesPage from "./pages/ExercisesPage";
 import ProfilePage from "./pages/ProfilePage";
+import ActivityPage from "./pages/ActivityPage";
 import { useQuery } from "@apollo/client";
 import { GET_AUTHENTICATED_USER } from "./graphql/queries/user.query";
 import { Toaster } from "react-hot-toast";
@@ -30,6 +31,7 @@ const routes = [
   { path: "/food/:id", element: <FoodDetailsPage />, showSideBar: true },
   { path: "/exercises", element: <ExercisesPage />, showSideBar: true },
   { path: "/profile", element: <ProfilePage />, showSideBar: true },
+  { path: "/activity", element: <ActivityPage />, showSideBar: true },
 ];
 
 function App() {
@@ -55,6 +57,7 @@ function App() {
       "/foodlist",
       "/food/:id",
       "/profile",
+      "/activity"
     ];
 
     if (protectedRoutes.includes(route.path) && !isAuthenticated) {

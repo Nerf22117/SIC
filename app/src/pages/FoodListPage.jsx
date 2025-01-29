@@ -140,7 +140,7 @@ export default function FoodListPage() {
                   key={food.id}
                   className="border border-gray-300 rounded-lg p-4 hover:bg-gray-100"
                 >
-                  <Link to={`/food/${food.foodId}`}>
+                  <Link to={`/food/${food.id}`}>
                     <img
                       src={food.image}
                       alt={food.name}

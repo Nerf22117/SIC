@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useSubscription } from "@apollo/client";
+import { useMutation, useSubscription, useQuery } from "@apollo/client";
 import toast from "react-hot-toast";
 import {
   CREATE_WATER,
@@ -7,12 +7,14 @@ import {
 import {
   GET_WATER_INTAKE,
   GET_WATER_OBJECTIVE_DAY,
-  GET_WATER_DATES,
 } from "../graphql/queries/water.query";
 import { HYDRATION_REMINDER } from "../graphql/subscriptions/user.subscriptions";
 import { useAuth } from "../context/AuthContext";
 import React, { useState, useEffect } from "react";
-import { Line } from "react-chartjs-2";
+import { motion, AnimatePresence } from "framer-motion";
+import GraphWater from "../components/ui/GraphWater";
+import GraphFood from "../components/ui/GraphFood";
+import GraphExercise from "../components/ui/GraphExercise";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -23,7 +25,6 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { motion, AnimatePresence } from "framer-motion";
 
 ChartJS.register(
   CategoryScale,
@@ -186,83 +187,6 @@ export default function HomePage() {
     refetchWaterIntake();
   };
 
-  const getLastWeekDates = () => {
-    const dates = [];
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      dates.push(date.toISOString().split("T")[0]);
-    }
-    return dates;
-  };
-
-  const lastWeekDates = getLastWeekDates();
-  const startDate = lastWeekDates[0];
-  const endDate = lastWeekDates[lastWeekDates.length - 1];
-
-  const {
-    data: waterWeek,
-    loading: loadingWaterWeek,
-    error: errorWaterWeek,
-  } = useQuery(GET_WATER_DATES, {
-    variables: { input: { startDate, endDate, userId } },
-  });
-
-  useEffect(() => {
-    if (waterWeek) {
-      console.log(waterWeek);
-    }
-  }, [waterWeek]);
-
-  const waterWeekData = lastWeekDates.map((date) => {
-    const dayData = waterWeek?.getUserWaters?.result?.find(
-      (day) => day.date === date
-    );
-    return dayData ? dayData.quantity * 0.25 : 0;
-  });
-  const dataWater = {
-    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-    datasets: [
-      {
-        label: "Water Consumption (L)",
-        data: waterWeekData,
-        backgroundColor: "rgba(54, 162, 235, 0.6)",
-      },
-    ],
-  };
-
-  if (loadingGetWater || loadingGetWaterObjective || loadingWaterWeek)
-    return <p>Loading...</p>;
-  if (errorGetWater || errorGetWaterObjective || errorWaterWeek)
-    return (
-      <p>
-        Error:{" "}
-        {errorGetWater?.message ||
-          errorGetWaterObjective?.message ||
-          errorWaterWeek?.message}
-      </p>
-    );
-  const dataFood = {
-    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-    datasets: [
-      {
-        label: "Food Consumption (kcal)",
-        data: [2000, 2200, 2100, 2300, 2400, 2500, 2200],
-        backgroundColor: "rgba(255, 99, 132, 0.6)",
-      },
-    ],
-  };
-  const dataExercise = {
-    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-    datasets: [
-      {
-        label: "Exercise History (mins)",
-        data: [30, 45, 60, 40, 50, 70, 60],
-        backgroundColor: "rgba(75, 192, 192, 0.6)",
-      },
-    ],
-  };
-
   if (loadingGetWater || loadingGetWaterObjective) return <p>Loading...</p>;
   if (errorGetWater || errorGetWaterObjective)
     return (
@@ -285,18 +209,9 @@ export default function HomePage() {
           <div className="bg-white shadow-md rounded-lg p-6 ">
             <h2 className="text-xl font-bold">Notifications</h2>
           </div>
-          <div className="bg-white shadow-md rounded-lg p-6 col-span-1">
-            <h2 className="text-xl font-bold">Water Consumption</h2>
-            <Line data={dataWater} />
-          </div>
-          <div className="bg-white shadow-md rounded-lg p-6 col-span-1">
-            <h2 className="text-xl font-bold">Food Consumption</h2>
-            <Line data={dataFood} />
-          </div>
-          <div className="bg-white shadow-md rounded-lg p-6 col-span-1">
-            <h2 className="text-xl font-bold">Exercise History</h2>
-            <Line data={dataExercise} />
-          </div>
+          <GraphWater />
+          <GraphFood />
+          <GraphExercise />
           <div className="bg-white shadow-md rounded-lg p-6 col-span-3">
             <h3 className="text-xl font-bold">Daily Water</h3>
             <div className="flex space-x-2 mt-4">

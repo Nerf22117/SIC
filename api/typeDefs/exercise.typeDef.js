@@ -14,6 +14,7 @@ const exerciseTypeDef = `#graphql
         getUserExercises(input: GetExercisesInput!, limit:Int, offset:Int, order:OrderEnum, search:String): ResponseExercises
         getUserExercise(input: GetExerciseInput!): ResponseExercise
         getDailyExerciseCalories(id:ID!): ResponseCalories
+        getExercisesDates(input:GetExercisesInput!): ResponseExercises
     }
 
     type Mutation {

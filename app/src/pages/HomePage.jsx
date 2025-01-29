@@ -1,7 +1,15 @@
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery, useSubscription } from "@apollo/client";
 import toast from "react-hot-toast";
-import { CREATE_WATER, REMOVE_WATER } from "../graphql/mutations/water.mutation";
-import { GET_WATER_INTAKE, GET_WATER_OBJECTIVE_DAY, GET_WATER_DATES } from '../graphql/queries/water.query';
+import {
+  CREATE_WATER,
+  REMOVE_WATER,
+} from "../graphql/mutations/water.mutation";
+import {
+  GET_WATER_INTAKE,
+  GET_WATER_OBJECTIVE_DAY,
+  GET_WATER_DATES,
+} from "../graphql/queries/water.query";
+import { HYDRATION_REMINDER } from "../graphql/subscriptions/user.subscriptions";
 import { useAuth } from "../context/AuthContext";
 import React, { useState, useEffect } from "react";
 import { Line } from "react-chartjs-2";
@@ -30,8 +38,22 @@ ChartJS.register(
 export default function HomePage() {
   const { authUser } = useAuth();
 
-  const [createWater, { loading: loadingWater, error }] = useMutation(CREATE_WATER);
-  const [removeWater, { loading: loadingRemoveWater, errorRemoveWater }] = useMutation(REMOVE_WATER);
+  const [createWater, { loading: loadingWater, error }] =
+    useMutation(CREATE_WATER);
+  const [removeWater, { loading: loadingRemoveWater, errorRemoveWater }] =
+    useMutation(REMOVE_WATER);
+
+  useSubscription(HYDRATION_REMINDER, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      console.log("Received subscription data:", subscriptionData);
+      if (subscriptionData.data?.hydrationReminder) {
+        const message = subscriptionData.data.hydrationReminder.message;
+        toast.success(message);
+      } else {
+        console.warn("No hydrationReminder data received.");
+      }
+    },
+  });
 
   const handleAddWater = async () => {
     try {
@@ -72,25 +94,35 @@ export default function HomePage() {
     }
   };
 
-  const userId = authUser?._id; 
-  const date = new Date().toISOString().split('T')[0]; 
+  const userId = authUser?._id;
+  const date = new Date().toISOString().split("T")[0];
 
-  const { data: dataWaterIntake, loading: loadingGetWater, error: errorGetWater, refetch: refetchWaterIntake } = useQuery(GET_WATER_INTAKE, {
+  const {
+    data: dataWaterIntake,
+    loading: loadingGetWater,
+    error: errorGetWater,
+    refetch: refetchWaterIntake,
+  } = useQuery(GET_WATER_INTAKE, {
     variables: { date, userId },
   });
-  const { data: dataWaterObjective, loading: loadingGetWaterObjective, error: errorGetWaterObjective } = useQuery(GET_WATER_OBJECTIVE_DAY, {
+  const {
+    data: dataWaterObjective,
+    loading: loadingGetWaterObjective,
+    error: errorGetWaterObjective,
+  } = useQuery(GET_WATER_OBJECTIVE_DAY, {
     variables: { id: userId },
   });
 
-  const waterIntakeInLiters = dataWaterIntake?.getUserWaterIntake?.result?.quantity
+  const waterIntakeInLiters = dataWaterIntake?.getUserWaterIntake?.result
+    ?.quantity
     ? (dataWaterIntake.getUserWaterIntake.result.quantity * 0.25).toFixed(2)
-    : '0.00';
+    : "0.00";
 
   const waterObjective = dataWaterObjective?.getUserInfo?.result?.water
-    ? (dataWaterObjective.getUserInfo.result.water).toFixed(2)
-    : '0.00';
+    ? dataWaterObjective.getUserInfo.result.water.toFixed(2)
+    : "0.00";
 
-  const numCups = Math.ceil(waterObjective / 0.25); 
+  const numCups = Math.ceil(waterObjective / 0.25);
 
   const [steps, setSteps] = useState(Array(numCups).fill(0));
   const frames = [
@@ -109,12 +141,11 @@ export default function HomePage() {
       const waterIntake = dataWaterIntake.getUserWaterIntake.result.quantity;
       const newSteps = Array(numCups).fill(0);
       for (let i = 0; i < waterIntake; i++) {
-        newSteps[i] = frames.length - 1; 
+        newSteps[i] = frames.length - 1;
       }
       setSteps(newSteps);
     }
   }, [dataWaterIntake, numCups]);
-
 
   const animateAddWater = (index) => {
     let currentStep = steps[index];
@@ -160,7 +191,7 @@ export default function HomePage() {
     for (let i = 6; i >= 0; i--) {
       const date = new Date();
       date.setDate(date.getDate() - i);
-      dates.push(date.toISOString().split('T')[0]);
+      dates.push(date.toISOString().split("T")[0]);
     }
     return dates;
   };
@@ -169,7 +200,11 @@ export default function HomePage() {
   const startDate = lastWeekDates[0];
   const endDate = lastWeekDates[lastWeekDates.length - 1];
 
-  const { data: waterWeek, loading: loadingWaterWeek, error: errorWaterWeek } = useQuery(GET_WATER_DATES, {
+  const {
+    data: waterWeek,
+    loading: loadingWaterWeek,
+    error: errorWaterWeek,
+  } = useQuery(GET_WATER_DATES, {
     variables: { input: { startDate, endDate, userId } },
   });
 
@@ -179,8 +214,10 @@ export default function HomePage() {
     }
   }, [waterWeek]);
 
-  const waterWeekData = lastWeekDates.map(date => {
-    const dayData = waterWeek?.getUserWaters?.result?.find(day => day.date === date);
+  const waterWeekData = lastWeekDates.map((date) => {
+    const dayData = waterWeek?.getUserWaters?.result?.find(
+      (day) => day.date === date
+    );
     return dayData ? dayData.quantity * 0.25 : 0;
   });
   const dataWater = {
@@ -194,8 +231,17 @@ export default function HomePage() {
     ],
   };
 
-  if (loadingGetWater || loadingGetWaterObjective || loadingWaterWeek) return <p>Loading...</p>;
-  if (errorGetWater || errorGetWaterObjective || errorWaterWeek) return <p>Error: {errorGetWater?.message || errorGetWaterObjective?.message || errorWaterWeek?.message}</p>;
+  if (loadingGetWater || loadingGetWaterObjective || loadingWaterWeek)
+    return <p>Loading...</p>;
+  if (errorGetWater || errorGetWaterObjective || errorWaterWeek)
+    return (
+      <p>
+        Error:{" "}
+        {errorGetWater?.message ||
+          errorGetWaterObjective?.message ||
+          errorWaterWeek?.message}
+      </p>
+    );
   const dataFood = {
     labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
     datasets: [
@@ -218,7 +264,10 @@ export default function HomePage() {
   };
 
   if (loadingGetWater || loadingGetWaterObjective) return <p>Loading...</p>;
-  if (errorGetWater || errorGetWaterObjective) return <p>Error: {errorGetWater?.message || errorGetWaterObjective?.message}</p>;
+  if (errorGetWater || errorGetWaterObjective)
+    return (
+      <p>Error: {errorGetWater?.message || errorGetWaterObjective?.message}</p>
+    );
 
   return (
     <div>
@@ -282,8 +331,12 @@ export default function HomePage() {
               ))}
             </div>
             <div>
-              <p className="mt-4 text-lg font-bold">Total Water Intake: {waterIntakeInLiters} liters</p>
-              <p className="mt-4 text-lg font-bold">Daily Water Objective: {waterObjective} liters</p>
+              <p className="mt-4 text-lg font-bold">
+                Total Water Intake: {waterIntakeInLiters} liters
+              </p>
+              <p className="mt-4 text-lg font-bold">
+                Daily Water Objective: {waterObjective} liters
+              </p>
             </div>
           </div>
         </div>

@@ -34,6 +34,10 @@ const userTypeDef = `#graphql
         updateUser(id: ID!, input: UpdateUserInput!): ResponseMessage
     }
 
+    type Subscription {
+        hydrationReminder: HydrationReminderResponseMessage
+    }
+
     input SignUpInput {
         username: String!
         name: String!
@@ -70,6 +74,11 @@ const userTypeDef = `#graphql
     }
 
     type ResponseMessage {
+        message: String!
+    }
+
+    type HydrationReminderResponseMessage{
+        userId: ID!
         message: String!
     }
 

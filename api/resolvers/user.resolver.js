@@ -54,12 +54,23 @@ const checkHydrationLevels = async () => {
       ); */
 
       if (waterConsumed < expectedWaterSoFar) {
+        //console.log("Sending hydration reminder...");
         pubsub.publish(HYDRATION_REMINDER, {
           hydrationReminder: {
             userId: _id,
             message: `You should have consumed ${expectedWaterSoFar.toFixed(
               2
-            )}ml of water by now`,
+            )}L of water by now`,
+          },
+        });
+      }
+
+      if (waterConsumed >= expectedWaterIntake) {
+        //console.log("User has consumed enough water for the day");
+        pubsub.publish(HYDRATION_REMINDER, {
+          hydrationReminder: {
+            userId: _id,
+            message: `You have consumed the required amount of water until now`,
           },
         });
       }

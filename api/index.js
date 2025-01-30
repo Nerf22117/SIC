@@ -2,6 +2,7 @@ import express from "express";
 import http from "http";
 import cors from "cors";
 import "./config/loadEnv.js";
+import path from "path";
 
 import passport from "passport";
 import session from "express-session";
@@ -27,6 +28,10 @@ configurePassport();
 
 // Initialize Express application
 const app = express();
+
+// Get the current directory
+const _dirname = path.resolve();
+
 // Create an HTTP server
 const httpServer = http.createServer(app);
 
@@ -86,6 +91,15 @@ app.use(
     context: async ({ req, res }) => buildContext({ req, res }),
   })
 );
+
+// Serve the frontend
+// npm run build to build the frontend, optmized version of the frontend
+app.use(express.static(path.join(_dirname, "app/dist")));
+
+// Serve the frontend for all routes
+app.get("*", (req, res) => {
+  res.sendFile(path.join(_dirname, "app/dist", "index.html"));
+});
 
 // Start the HTTP server
 await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve));

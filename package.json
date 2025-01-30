@@ -4,7 +4,9 @@
   "description": "Repository made in the scope of the Cloud Services and Interfaces - 3rd year of the Degree in Technologies and Information Systems for the Web (TSIW)\r (ESMAD-P.PORTO)",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon api/index.js"
+    "start": "set NODE_ENV=production && node api/index.js",
+    "dev": "set NODE_ENV=development && nodemon api/index.js",
+    "build": "npm install && npm install --prefix app && npm run build --prefix app"
   },
   "repository": {
     "type": "git",

@@ -50,6 +50,9 @@ export default function VerifyAccountPage() {
         },
       });
       toast.success("Account verified successfully");
+      setTimeout(() => {
+        window.location.href = "/";
+      },3000)
     } catch (error) {
       console.log(error);
       toast.error(error.message);

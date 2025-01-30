@@ -177,14 +177,14 @@ export default function ActivityPage() {
         </div>
         <div className="flex justify-center mt-2">
           <button
-            className="px-3 py-1 bg-gray-300 text-gray-700 rounded-lg mr-2"
+            className="px-3 py-1 bg-gray-300 text-gray-700 rounded-lg mr-2 cursor-pointer"
             onClick={() => setFoodPage((prev) => Math.max(prev - 1, 1))}
             disabled={foodPage === 1}
           >
             Previous
           </button>
           <button
-            className="px-3 py-1 bg-gray-300 text-gray-700 rounded-lg"
+            className="px-3 py-1 bg-gray-300 text-gray-700 rounded-lg cursor-pointer"
             onClick={() => setFoodPage((prev) => prev + 1)}
             disabled={dataUserFood?.getUserFoods?.result?.length < 4}
           >
@@ -260,14 +260,14 @@ export default function ActivityPage() {
         </div>
         <div className="flex justify-center mt-4">
           <button
-            className="px-3 py-1 bg-gray-300 text-gray-700 rounded-lg mr-2"
+            className="px-3 py-1 bg-gray-300 text-gray-700 rounded-lg mr-2 cursor-pointer"
             onClick={() => setExercisePage((prev) => Math.max(prev - 1, 1))}
             disabled={exercisePage === 1}
           >
             Previous
           </button>
           <button
-            className="px-3 py-1 bg-gray-300 text-gray-700 rounded-lg"
+            className="px-3 py-1 bg-gray-300 text-gray-700 rounded-lg cursor-pointer"
             onClick={() => setExercisePage((prev) => prev + 1)}
             disabled={dataUserExercise?.getUserExercises?.result?.length < 4}
           >

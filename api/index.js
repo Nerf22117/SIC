@@ -23,8 +23,13 @@ import { configurePassport } from "./config/passport.config.js";
 import mergedResolvers from "./resolvers/index.js";
 import mergedTypeDefs from "./typeDefs/index.js";
 
+import job from "./cron.js";
+
 // Initialize Passport strategies
 configurePassport();
+
+// Start the cron job
+job.start();
 
 // Initialize Express application
 const app = express();
